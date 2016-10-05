@@ -1,1 +1,1 @@
-module.exports = 'get-your-key-from-trafiklab'
+throw 'You need to get your own key from trafiklab.se'
