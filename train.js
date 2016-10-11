@@ -1,18 +1,23 @@
 const http = require('http')
 
+const foreach = require('lodash.foreach')
+const groupby = require('lodash.groupby')
+const map = require('lodash.map')
+const maxby = require('lodash.maxby')
+
 const announcementQuery = require('./announcementQuery')
 const css = require('./css')
 const formatLatestAnnouncement = require('./formatLatestAnnouncement')
+const position = require('./position')
 const stations = require('./stations')
 
 let stationNames = false
 
-function train(id, outgoingResponse) {
+function train(outgoingResponse) {
     if (!stationNames)
         stations(data => stationNames = data)
 
     const postData = announcementQuery(`
-        <EQ name='AdvertisedTrainIdent' value='${id}' />
         <GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />
         <LT name='TimeAtLocation' value='$dateadd(0:12:00)' />`)
 
@@ -43,15 +48,28 @@ function train(id, outgoingResponse) {
             outgoingResponse.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache'})
             outgoingResponse.write('<!DOCTYPE html>')
             outgoingResponse.write('<meta name="viewport" content="width=device-width, initial-scale=1.0" />')
-            outgoingResponse.write(`<title>${id}</title>`)
+            outgoingResponse.write('<title>Pendeltåg</title>')
             outgoingResponse.write(`<style>${css()}</style>`)
 
-            outgoingResponse.write('<p>')
-            outgoingResponse.write(formatLatestAnnouncement(announcements, stationNames))
-            outgoingResponse.write('</p>')
+            const latest = map(groupby(announcements, 'AdvertisedTrainIdent'), v => maxby(v, 'TimeAtLocation'))
+
+            foreach(groupby(latest, direction), (trains, dir) => {
+                outgoingResponse.write(`<h1>${dir}</h1>`)
+
+                trains.sort((a, b) => position.y(a.LocationSignature) - position.y(b.LocationSignature))
+
+                foreach(trains, announcement => {
+                    const s = formatLatestAnnouncement(announcement, stationNames)
+                    outgoingResponse.write(`<div class=${position.x(announcement.LocationSignature)}>${s}</div>`)
+                })
+            })
 
             outgoingResponse.end()
         }
+    }
+
+    function direction(t) {
+        return /[13579]$/.test(t.AdvertisedTrainIdent) ? 'söderut' : 'norrut'
     }
 
     function handleError(e) {
