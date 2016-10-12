@@ -1,7 +1,6 @@
 const expect = require('chai').expect
 
 const formatLatestAnnouncement = require('../formatLatestAnnouncement')
-const MatchingTrains = require('../MatchingTrains')
 
 describe('formatLatestAnnouncement', function () {
     it('departure on time', function () {
