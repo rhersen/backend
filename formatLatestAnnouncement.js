@@ -24,16 +24,11 @@ function activity(a) {
 function precision(a) {
     const delay = moment(a.TimeAtLocation).diff(moment(a.AdvertisedTimeAtLocation), 'minutes')
 
-    if (!delay)
-        return 'i tid'
+    if (delay === 1) return 'nästan i tid'
+    if (delay > 0) return `${delay} minuter försenat`
+    if (delay < -1) return 'i god tid'
 
-    if (delay === 1)
-        return 'nästan i tid'
-
-    if (delay < 0)
-        return 'i god tid'
-
-    return `${delay} minuter försenat`
+    return 'i tid'
 }
 
 module.exports = formatLatestAnnouncement

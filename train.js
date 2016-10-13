@@ -1,4 +1,5 @@
 const http = require('http')
+const moment = require('moment')
 
 const foreach = require('lodash.foreach')
 const groupby = require('lodash.groupby')
@@ -58,14 +59,23 @@ function train(outgoingResponse) {
 
                 trains.sort((a, b) => position.y(a.LocationSignature) - position.y(b.LocationSignature))
 
-                foreach(trains, announcement => {
-                    const s = formatLatestAnnouncement(announcement, stationNames)
-                    outgoingResponse.write(`<div class=${position.x(announcement.LocationSignature)}>${s}</div>`)
+                foreach(trains, a => {
+                    const s = formatLatestAnnouncement(a, stationNames)
+                    outgoingResponse.write(`<div class="${position.x(a.LocationSignature)} ${delay(a)}">${s}</div>`)
                 })
             })
 
             outgoingResponse.end()
         }
+    }
+
+    function delay(a) {
+        var minutes = moment(a.TimeAtLocation).diff(moment(a.AdvertisedTimeAtLocation), 'minutes')
+        if (minutes < 1) return 'delay0'
+        if (minutes < 2) return 'delay1'
+        if (minutes < 4) return 'delay2'
+        if (minutes < 8) return 'delay4'
+        return 'delay8'
     }
 
     function direction(t) {

@@ -43,7 +43,18 @@ describe('formatLatestAnnouncement', function () {
             'AdvertisedTrainIdent': '2868',
             'LocationSignature': 'Spå',
             'ToLocation': [{'LocationName': 'Spå', 'Priority': 1, 'Order': 0}],
+            'TimeAtLocation': '2016-06-28T22:08:00'
+        })).to.equal('Tåg 2868 mot Spå ankom till Spå i god tid klockan 22:08')
+    })
+
+    it('one minute is not really early arrival', function () {
+        expect(formatLatestAnnouncement({
+            'ActivityType': 'Ankomst',
+            'AdvertisedTimeAtLocation': '2016-06-28T22:10:00',
+            'AdvertisedTrainIdent': '2868',
+            'LocationSignature': 'Spå',
+            'ToLocation': [{'LocationName': 'Spå', 'Priority': 1, 'Order': 0}],
             'TimeAtLocation': '2016-06-28T22:09:00'
-        })).to.equal('Tåg 2868 mot Spå ankom till Spå i god tid klockan 22:09')
+        })).to.equal('Tåg 2868 mot Spå ankom till Spå i tid klockan 22:09')
     })
 })
