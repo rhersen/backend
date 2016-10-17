@@ -1,5 +1,7 @@
 const moment = require('moment')
 
+const map = require('lodash.map')
+
 function formatLatestAnnouncement(a, stationNames) {
     if (!a)
         return 'Aktuell information saknas'
@@ -8,12 +10,16 @@ function formatLatestAnnouncement(a, stationNames) {
 
     return `Tåg ${a.AdvertisedTrainIdent} mot ${to(a)} ${activity(a)} ${location(a)} ${precision(a)} klockan ${ s}`
 
-    function location() {
-        return stationNames ? stationNames[a.LocationSignature] : a.LocationSignature
+    function to() {
+        return map(map(a.ToLocation, 'LocationName'), stationName)
     }
 
-    function to() {
-        return a.ToLocation.map(l => stationNames ? stationNames[l.LocationName] : l.LocationName)
+    function location() {
+        return stationName(a.LocationSignature)
+    }
+
+    function stationName(locationSignature) {
+        return stationNames ? stationNames[locationSignature] : locationSignature
     }
 }
 
