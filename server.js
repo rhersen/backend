@@ -2,15 +2,17 @@ const atob = require('atob')
 
 const css = require('./css')
 const stations = require('./stations')
-const train = require('./train')
+const current = require('./current')
 
 function requestListener(incomingRequest, outgoingResponse) {
     const url = decodeURIComponent(incomingRequest.url)
 
     if (/favicon.ico/.test(url))
         favicon(outgoingResponse)
+    else if (/json/.test(url))
+        current.json(outgoingResponse)
     else
-        train(outgoingResponse)
+        current.html(outgoingResponse)
 }
 
 function favicon(response) {

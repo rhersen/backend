@@ -6,7 +6,7 @@ const stations = require('./stations')
 
 let stationNames = false
 
-function train(outgoingResponse) {
+function current(outgoingResponse, respond) {
     if (!stationNames)
         stations(data => stationNames = data)
 
@@ -34,14 +34,7 @@ function train(outgoingResponse) {
         let body = ''
         incomingResponse.setEncoding('utf8')
         incomingResponse.on('data', chunk => body += chunk)
-        incomingResponse.on('end', done)
-
-        function done() {
-            const announcements = JSON.parse(body).RESPONSE.RESULT[0].TrainAnnouncement
-            outgoingResponse.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache'})
-            outgoingResponse.write(getHtml(announcements, stationNames))
-            outgoingResponse.end()
-        }
+        incomingResponse.on('end', () => respond(body))
     }
 
     function handleError(e) {
@@ -50,4 +43,19 @@ function train(outgoingResponse) {
     }
 }
 
-module.exports = train
+module.exports = {
+    html: outgoingResponse => current(outgoingResponse, body => {
+        const announcements = JSON.parse(body).RESPONSE.RESULT[0].TrainAnnouncement
+        outgoingResponse.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache'})
+        outgoingResponse.write(getHtml(announcements, stationNames))
+        outgoingResponse.end()
+    }),
+    json: outgoingResponse => current(outgoingResponse, body => {
+        outgoingResponse.writeHead(200, {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Cache-Control': 'no-cache'
+        })
+        outgoingResponse.write(body)
+        outgoingResponse.end()
+    })
+}
