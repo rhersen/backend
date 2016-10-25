@@ -3,7 +3,7 @@ const http = require('http')
 const key = require('./key')
 const css = require('./css')
 
-function stations(callback) {
+function stations(respond, handleError) {
     const postData = query()
     const options = {
         hostname: 'api.trafikinfo.trafikverket.se',
@@ -16,6 +16,7 @@ function stations(callback) {
     }
 
     const outgoingRequest = http.request(options, handleResponse)
+    outgoingRequest.on('error', handleError)
     outgoingRequest.write(postData)
 
     outgoingRequest.end()
@@ -24,14 +25,7 @@ function stations(callback) {
         let body = ''
         incomingResponse.setEncoding('utf8')
         incomingResponse.on('data', chunk => body += chunk)
-        incomingResponse.on('end', done)
-
-        function done() {
-            const trainStations = JSON.parse(body).RESPONSE.RESULT[0].TrainStation
-            let obj = {}
-            trainStations.forEach(entry => obj[entry.LocationSignature] = entry.AdvertisedShortLocationName)
-            callback(obj)
-        }
+        incomingResponse.on('end', () => respond(body))
     }
 }
 
@@ -54,4 +48,30 @@ function query() {
     </REQUEST>`
 }
 
-module.exports = stations
+module.exports = {
+    obj: callback => stations(
+        body => {
+            const trainStations = JSON.parse(body).RESPONSE.RESULT[0].TrainStation
+            let obj = {}
+            trainStations.forEach(entry => obj[entry.LocationSignature] = entry.AdvertisedShortLocationName)
+            callback(obj)
+        },
+        function handleError(e) {
+            callback(e)
+        }
+    ),
+    json: outgoingResponse => stations(
+        body => {
+            outgoingResponse.writeHead(200, {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Cache-Control': 'no-cache'
+            })
+            outgoingResponse.write(body)
+            outgoingResponse.end()
+        },
+        function handleError(e) {
+            outgoingResponse.writeHead(500, {'Content-Type': 'text/plain'})
+            outgoingResponse.end(`problem with request: ${e.message}`)
+        }
+    )
+}

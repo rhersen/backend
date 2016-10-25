@@ -6,9 +6,9 @@ const stations = require('./stations')
 
 let stationNames = false
 
-function current(outgoingResponse, respond) {
+function current(respond, handleError) {
     if (!stationNames)
-        stations(data => stationNames = data)
+        stations.obj(data => stationNames = data)
 
     const postData = announcementQuery(`
         <GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />
@@ -36,26 +36,33 @@ function current(outgoingResponse, respond) {
         incomingResponse.on('data', chunk => body += chunk)
         incomingResponse.on('end', () => respond(body))
     }
-
-    function handleError(e) {
-        outgoingResponse.writeHead(500, {'Content-Type': 'text/plain'})
-        outgoingResponse.end(`problem with request: ${e.message}`)
-    }
 }
 
 module.exports = {
-    html: outgoingResponse => current(outgoingResponse, body => {
-        const announcements = JSON.parse(body).RESPONSE.RESULT[0].TrainAnnouncement
-        outgoingResponse.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache'})
-        outgoingResponse.write(getHtml(announcements, stationNames))
-        outgoingResponse.end()
-    }),
-    json: outgoingResponse => current(outgoingResponse, body => {
-        outgoingResponse.writeHead(200, {
-            'Content-Type': 'application/json; charset=utf-8',
-            'Cache-Control': 'no-cache'
-        })
-        outgoingResponse.write(body)
-        outgoingResponse.end()
-    })
+    html: outgoingResponse => current(
+        body => {
+            const announcements = JSON.parse(body).RESPONSE.RESULT[0].TrainAnnouncement
+            outgoingResponse.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache'})
+            outgoingResponse.write(getHtml(announcements, stationNames))
+            outgoingResponse.end()
+        },
+        function handleError(e) {
+            outgoingResponse.writeHead(500, {'Content-Type': 'text/plain'})
+            outgoingResponse.end(`problem with request: ${e.message}`)
+        }
+    ),
+    json: outgoingResponse => current(
+        body => {
+            outgoingResponse.writeHead(200, {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Cache-Control': 'no-cache'
+            })
+            outgoingResponse.write(body)
+            outgoingResponse.end()
+        },
+        function handleError(e) {
+            outgoingResponse.writeHead(500, {'Content-Type': 'text/plain'})
+            outgoingResponse.end(`problem with request: ${e.message}`)
+        }
+    )
 }

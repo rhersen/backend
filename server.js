@@ -9,8 +9,10 @@ function requestListener(incomingRequest, outgoingResponse) {
 
     if (/favicon.ico/.test(url))
         favicon(outgoingResponse)
-    else if (/json/.test(url))
+    else if (/json\/current/.test(url))
         current.json(outgoingResponse)
+    else if (/json\/stations/.test(url))
+        stations.json(outgoingResponse)
     else
         current.html(outgoingResponse)
 }
