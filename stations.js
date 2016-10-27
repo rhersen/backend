@@ -3,7 +3,15 @@ const http = require('http')
 const key = require('./key')
 const css = require('./css')
 
+let cache = false
+
 function stations(respond, handleError) {
+    if (cache) {
+        console.log('cache response')
+        respond(cache)
+        return
+    }
+
     const postData = query()
     const options = {
         hostname: 'api.trafikinfo.trafikverket.se',
@@ -22,10 +30,11 @@ function stations(respond, handleError) {
     outgoingRequest.end()
 
     function handleResponse(incomingResponse) {
+        console.log('ajax response')
         let body = ''
         incomingResponse.setEncoding('utf8')
         incomingResponse.on('data', chunk => body += chunk)
-        incomingResponse.on('end', () => respond(body))
+        incomingResponse.on('end', () => respond(cache = body))
     }
 }
 
