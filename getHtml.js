@@ -13,10 +13,12 @@ function getHtml(announcements, stationNames) {
     var s = '<!DOCTYPE html>'
     s += (s)
     s += ('<meta name="viewport" content="width=device-width, initial-scale=1.0" />')
-    s += ('<title>Pendeltåg</title>')
+    s += ('<title>OBSOLETE</title>')
     s += (`<style>${css()}</style>`)
 
     const latest = map(groupby(announcements, 'AdvertisedTrainIdent'), v => maxby(v, 'TimeAtLocation'))
+
+    s += (`<h1>OBSOLETE</h1>`)
 
     foreach(groupby(latest, direction), (trains, dir) => {
         s += (`<h1>${dir}</h1>`)
