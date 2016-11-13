@@ -1,13 +1,11 @@
 const http = require('http')
 
 const key = require('./key')
-const css = require('./css')
 
 let cache = false
 
 function stations(respond, handleError) {
     if (cache) {
-        console.log('cache response')
         respond(cache)
         return
     }
@@ -30,7 +28,6 @@ function stations(respond, handleError) {
     outgoingRequest.end()
 
     function handleResponse(incomingResponse) {
-        console.log('ajax response')
         let body = ''
         incomingResponse.setEncoding('utf8')
         incomingResponse.on('data', chunk => body += chunk)
@@ -58,17 +55,6 @@ function query() {
 }
 
 module.exports = {
-    obj: callback => stations(
-        body => {
-            const trainStations = JSON.parse(body).RESPONSE.RESULT[0].TrainStation
-            let obj = {}
-            trainStations.forEach(entry => obj[entry.LocationSignature] = entry.AdvertisedShortLocationName)
-            callback(obj)
-        },
-        function handleError(e) {
-            callback(e)
-        }
-    ),
     json: outgoingResponse => stations(
         body => {
             outgoingResponse.writeHead(200, {

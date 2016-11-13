@@ -1,8 +1,6 @@
 const http = require('http')
 
-const announcementQuery = require('./announcementQuery')
-const getHtml = require('./getHtml')
-const stations = require('./stations')
+const key = require('./key')
 
 function current(respond, handleError) {
     const postData = announcementQuery(`
@@ -33,27 +31,29 @@ function current(respond, handleError) {
     }
 }
 
-module.exports = {
-    html: outgoingResponse => {
-        let stationNames
-        stations.obj(data => stationNames = data)
+function announcementQuery(filters) {
+    return `<REQUEST>
+     <LOGIN authenticationkey='${key}' />
+     <QUERY objecttype='TrainAnnouncement' lastmodified='true'>
+      <FILTER>
+       <AND>
+        <IN name='ProductInformation' value='Pendeltåg' />
+        <NE name='Canceled' value='true' />
+        ${filters}
+       </AND>
+      </FILTER>
+      <INCLUDE>LocationSignature</INCLUDE>
+      <INCLUDE>AdvertisedTrainIdent</INCLUDE>
+      <INCLUDE>AdvertisedTimeAtLocation</INCLUDE>
+      <INCLUDE>EstimatedTimeAtLocation</INCLUDE>
+      <INCLUDE>TimeAtLocation</INCLUDE>
+      <INCLUDE>ToLocation</INCLUDE>
+      <INCLUDE>ActivityType</INCLUDE>
+     </QUERY>
+    </REQUEST>`
+}
 
-        return current(
-            body => {
-                const announcements = JSON.parse(body).RESPONSE.RESULT[0].TrainAnnouncement
-                outgoingResponse.writeHead(200, {
-                    'Content-Type': 'text/html; charset=utf-8',
-                    'Cache-Control': 'no-cache'
-                })
-                outgoingResponse.write(getHtml(announcements, stationNames))
-                outgoingResponse.end()
-            },
-            function handleError(e) {
-                outgoingResponse.writeHead(500, {'Content-Type': 'text/plain'})
-                outgoingResponse.end(`problem with request: ${e.message}`)
-            }
-        )
-    },
+module.exports = {
     json: outgoingResponse => current(
         body => {
             outgoingResponse.writeHead(200, {
