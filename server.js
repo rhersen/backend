@@ -1,13 +1,15 @@
 const atob = require('atob')
 
 const stations = require('./stations')
-const current = require('./current')
+const announcements = require('./announcements')
 
 function requestListener(incomingRequest, outgoingResponse) {
     const url = decodeURIComponent(incomingRequest.url)
 
     if (/current/.test(url))
-        current.json(outgoingResponse)
+        announcements.current(outgoingResponse)
+    else if (/ingela/.test(url))
+        announcements.ingela(outgoingResponse)
     else if (/stations/.test(url))
         stations.json(outgoingResponse)
     else
