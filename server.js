@@ -1,6 +1,6 @@
 const atob = require('atob')
 
-const announcements = require('./announcements')
+const sendRequest = require('./sendRequest')
 const key = require('./key')
 const stations = require('./stations')
 
@@ -30,11 +30,11 @@ function requestListener(incomingRequest, outgoingResponse) {
     const url = decodeURIComponent(incomingRequest.url)
 
     if (/current/.test(url))
-        announcements.sendRequest(announcementQuery(`
+        sendRequest(announcementQuery(`
         <GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />
-        <LT name='TimeAtLocation' value='$dateadd(0:12:00)' />`))(outgoingResponse)
+        <LT name='TimeAtLocation' value='$dateadd(0:12:00)' />`), outgoingResponse)
     else if (/ingela/.test(url))
-        announcements.sendRequest(announcementQuery(`
+        sendRequest(announcementQuery(`
         <OR>
           <EQ name='LocationSignature' value='Tul' />
           <EQ name='LocationSignature' value='Åbe' />
@@ -42,7 +42,7 @@ function requestListener(incomingRequest, outgoingResponse) {
         </OR>
         <GT name='AdvertisedTimeAtLocation' value='$dateadd(-0:28:00)' />
         <LT name='AdvertisedTimeAtLocation' value='$dateadd(0:28:00)' />`
-        ))(outgoingResponse)
+        ), outgoingResponse)
     else if (/stations/.test(url))
         stations.json(outgoingResponse)
     else
