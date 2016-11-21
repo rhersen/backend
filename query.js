@@ -39,7 +39,16 @@ function ingela() {
     )
 }
 
+function train(id) {
+    return announcementQuery(`
+        <EQ name='AdvertisedTrainIdent' value='${id}' />
+        <GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />
+        <LT name='TimeAtLocation' value='$dateadd(0:12:00)' />`
+    )
+}
+
 module.exports = {
     current: current,
-    ingela: ingela
+    ingela: ingela,
+    train: train
 }
