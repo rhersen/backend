@@ -34,8 +34,8 @@ function ingela() {
           <EQ name='LocationSignature' value='Åbe' />
           <EQ name='LocationSignature' value='Sub' />
         </OR>
-        <GT name='AdvertisedTimeAtLocation' value='$dateadd(-0:28:00)' />
-        <LT name='AdvertisedTimeAtLocation' value='$dateadd(0:28:00)' />`
+        <GT name='AdvertisedTimeAtLocation' value='$dateadd(-1:00:00)' />
+        <LT name='AdvertisedTimeAtLocation' value='$dateadd(2:00:00)' />`
     )
 }
 
