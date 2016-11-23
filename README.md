@@ -1,3 +1,3 @@
-# ingela
+# backend
 
-This webapp selects the best trains for going from Tullinge to Sundbyberg.
+Deployed with `node server.js`

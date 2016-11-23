@@ -1,6 +1,6 @@
 const http = require('http')
 
-module.exports = function (postData, outgoingResponse) {
+module.exports = (postData, outgoingResponse) => {
     const options = {
         hostname: 'api.trafikinfo.trafikverket.se',
         port: 80,
