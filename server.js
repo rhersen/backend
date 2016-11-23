@@ -25,4 +25,4 @@ function favicon(response) {
     response.end(atob('iVBORw0KGgoAAAANSUhEUgAAABAAAAAQEAYAAABPYyMiAAAABmJLR0T'))
 }
 
-require('http').createServer(requestListener).listen(1339, '127.0.0.1')
+require('http').createServer(requestListener).listen(1337, '127.0.0.1')
