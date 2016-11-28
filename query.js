@@ -27,15 +27,23 @@ function current() {
         <GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />
         <LT name='TimeAtLocation' value='$dateadd(0:12:00)' />`)
 }
-function ingela() {
+function ingela(time, locations) {
     return announcementQuery(`
+        <OR> ${locations.map(location => `<EQ name='LocationSignature' value='${location}' />`).join(' ')} </OR>
         <OR>
-          <EQ name='LocationSignature' value='Tul' />
-          <EQ name='LocationSignature' value='Åbe' />
-          <EQ name='LocationSignature' value='Sub' />
-        </OR>
-        <GT name='AdvertisedTimeAtLocation' value='$dateadd(-1:00:00)' />
-        <LT name='AdvertisedTimeAtLocation' value='$dateadd(2:00:00)' />`
+         <AND>
+          <GT name='AdvertisedTimeAtLocation' value='$dateadd(-${time})' />
+          <LT name='AdvertisedTimeAtLocation' value='$dateadd(${time})' />
+         </AND>
+         <AND>
+          <GT name='EstimatedTimeAtLocation' value='$dateadd(-${time})' />
+          <LT name='EstimatedTimeAtLocation' value='$dateadd(${time})' />
+         </AND>
+         <AND>
+          <GT name='TimeAtLocation' value='$dateadd(-${time})' />
+          <LT name='TimeAtLocation' value='$dateadd(${time})' />
+         </AND>
+        </OR>`
     )
 }
 
