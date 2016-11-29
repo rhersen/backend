@@ -27,7 +27,7 @@ function current() {
         <GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />
         <LT name='TimeAtLocation' value='$dateadd(0:12:00)' />`)
 }
-function ingela(time, locations) {
+function trains(time, locations) {
     return announcementQuery(`
         <OR> ${locations.map(location => `<EQ name='LocationSignature' value='${location}' />`).join(' ')} </OR>
         <OR>
@@ -57,6 +57,6 @@ function train(id) {
 
 module.exports = {
     current: current,
-    ingela: ingela,
+    trains: trains,
     train: train
 }

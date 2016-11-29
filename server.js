@@ -7,13 +7,17 @@ const query = require('./query')
 function requestListener(incomingRequest, outgoingResponse) {
     let match
     const url = decodeURIComponent(incomingRequest.url)
+    let q;
 
     if (/current/.test(url))
-        sendRequest(query.current(), outgoingResponse)
+        q = query.current();
     else if (/ingela/.test(url))
-        sendRequest(query.ingela('1:30:00', ['Tul', 'Åbe', 'Sub']), outgoingResponse)
+        q = query.trains('1:30:00', ['Tul', 'Åbe', 'Sub'])
     else if (match = /train.(\d\d\d\d)/.exec(url))
-        sendRequest(query.train(match[1]), outgoingResponse)
+        q = query.train(match[1])
+
+    if (q)
+        sendRequest(q, outgoingResponse)
     else if (/stations/.test(url))
         stations.json(outgoingResponse)
     else
