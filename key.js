@@ -1,1 +1,1 @@
-throw 'You need to get your own key from trafiklab.se'
+module.exports = 'invalid'
