@@ -2,19 +2,11 @@ const atob = require('atob')
 
 const sendRequest = require('./sendRequest')
 const stations = require('./stations')
-const query = require('./query')
+const getQuery = require('./getQuery')
 
 function requestListener(incomingRequest, outgoingResponse) {
-    let match
     const url = decodeURIComponent(incomingRequest.url)
-    let q;
-
-    if (/current/.test(url))
-        q = query.current();
-    else if (/ingela/.test(url))
-        q = query.trains('1:30:00', ['Tul', 'Åbe', 'Sub'])
-    else if (match = /train.(\d\d\d\d)/.exec(url))
-        q = query.train(match[1])
+    const q = getQuery(url)
 
     if (q)
         sendRequest(q, outgoingResponse)
