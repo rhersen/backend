@@ -22,13 +22,22 @@ function announcementQuery(filters) {
     </REQUEST>`
 }
 
-function current() {
-    return announcementQuery(`
-        <GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />
-        <LT name='TimeAtLocation' value='$dateadd(0:12:00)' />`)
+
+function like(direction) {
+    if (!direction)
+        return ''
+
+    return `<LIKE name='AdvertisedTrainIdent' value='/[${direction === 'n' ? '02468' : '13579'}]$/' />`
 }
-function trains(time, locations) {
-    return announcementQuery(`
+
+
+module.exports = {
+    current: () => announcementQuery(`
+        <GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />
+        <LT name='TimeAtLocation' value='$dateadd(0:12:00)' />`),
+
+    trains: (time, locations, direction) => announcementQuery(`
+        ${(like(direction))}
         <OR> ${locations.map(location => `<EQ name='LocationSignature' value='${location}' />`).join(' ')} </OR>
         <OR>
          <AND>
@@ -44,19 +53,11 @@ function trains(time, locations) {
           <LT name='TimeAtLocation' value='$dateadd(${time})' />
          </AND>
         </OR>`
-    )
-}
+    ),
 
-function train(id) {
-    return announcementQuery(`
+    train: id => announcementQuery(`
         <EQ name='AdvertisedTrainIdent' value='${id}' />
         <GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />
         <LT name='TimeAtLocation' value='$dateadd(0:12:00)' />`
     )
-}
-
-module.exports = {
-    current: current,
-    trains: trains,
-    train: train
 }
