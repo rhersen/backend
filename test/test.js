@@ -33,15 +33,33 @@ describe('getQuery', () => {
             expect(query).to.match(/<EQ name='LocationSignature' value='Bkb' .>/)
             expect(query).to.match(/<EQ name='LocationSignature' value='Rön' .>/)
         })
+        it('northbound', () => {
+            const query = getQuery('/trains?direction=n&locations=Bkb,Rön')
+            expect(query).to.match(/<LIKE name='AdvertisedTrainIdent' value='..02468/)
+            expect(query).to.match(/<EQ name='LocationSignature' value='Bkb' .>/)
+            expect(query).to.match(/<EQ name='LocationSignature' value='Rön' .>/)
+        })
 
         it('southbound', () => {
             const query = getQuery('/trains/s?Bkb,Jkb')
             expect(query).to.match(/<LIKE name='AdvertisedTrainIdent' value='..13579/)
             expect(query).to.match(/<LT name='TimeAtLocation' value='.dateadd.1:00:00.' .>/)
         })
+        it('southbound', () => {
+            const query = getQuery('/trains?direction=s&locations=Bkb,Jkb')
+            expect(query).to.match(/<LIKE name='AdvertisedTrainIdent' value='..13579/)
+            expect(query).to.match(/<LT name='TimeAtLocation' value='.dateadd.1:00:00.' .>/)
+        })
 
         it('both directions', () => {
             const query = getQuery('/trains?Bkb,Rön')
+            expect(query).to.not.match(/<LIKE name='AdvertisedTrainIdent' value='..02468/)
+            expect(query).to.not.match(/<LIKE name='AdvertisedTrainIdent' value='..13579/)
+            expect(query).to.match(/<EQ name='LocationSignature' value='Bkb' .>/)
+            expect(query).to.match(/<EQ name='LocationSignature' value='Rön' .>/)
+        })
+        it('both directions', () => {
+            const query = getQuery('/trains?locations=Bkb,Rön')
             expect(query).to.not.match(/<LIKE name='AdvertisedTrainIdent' value='..02468/)
             expect(query).to.not.match(/<LIKE name='AdvertisedTrainIdent' value='..13579/)
             expect(query).to.match(/<EQ name='LocationSignature' value='Bkb' .>/)
