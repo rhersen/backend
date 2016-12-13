@@ -12,6 +12,7 @@
     "atob": "^2.0.3",
     "lodash.includes": "4.x",
     "lodash.foreach": "4.x",
+    "lodash.frompairs": "4.x",
     "lodash.groupby": "4.x",
     "lodash.map": "4.x",
     "lodash.maxby": "4.x",

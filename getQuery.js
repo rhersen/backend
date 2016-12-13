@@ -1,4 +1,13 @@
+const fromPairs = require('lodash.frompairs')
+
 const query = require('./query')
+
+function parse(queryString) {
+    return fromPairs(queryString
+        .split('&')
+        .map(s => /(\w+)=(.*)/.exec(s))
+        .map(m => [m[1], m[2]]))
+}
 
 module.exports = url => {
     let match
@@ -9,14 +18,10 @@ module.exports = url => {
     if (/ingela/.test(url))
         return query.trains('1:30:00', ['Tul', 'Åbe', 'Sub'])
 
-    if (match = /trains\?locations=([a-zA-ZåäöÅÄÖ,]+)/.exec(url))
-        return query.trains('1:00:00', match[1].split(','))
-
-    if (match = /trains\?direction=([ns])&locations=([a-zA-ZåäöÅÄÖ,]+)/.exec(url))
-        return query.trains('1:00:00', match[2].split(','), match[1])
-
-    if (match = /trains.?([ns]?)\?([a-zA-ZåäöÅÄÖ,]+)/.exec(url))
-        return query.trains('1:00:00', match[2].split(','), match[1])
+    if (match = /trains\?(.*)/.exec(url)) {
+        const params = parse(match[1])
+        return query.trains('1:00:00', params.locations.split(','), params.direction)
+    }
 
     if (match = /train.(\d\d\d\d)/.exec(url))
         return query.train(match[1])
