@@ -12,6 +12,8 @@ describe('getQuery', () => {
         const query = getQuery('/ingela')
         expect(query).to.match(/name='AdvertisedTimeAtLocation'/)
         expect(query).to.match(/<EQ name='LocationSignature' value='Tul' .>/)
+        expect(query).to.match(/<GT name='TimeAtLocation' value='.dateadd.-1:30:00.' .>/)
+        expect(query).to.match(/<LT name='TimeAtLocation' value='.dateadd.1:30:00.' .>/)
         expect(query).to.not.match(/<LIKE name='AdvertisedTrainIdent' value='..13579/)
     })
 
@@ -35,8 +37,9 @@ describe('getQuery', () => {
         })
 
         it('southbound', () => {
-            const query = getQuery('/trains?direction=s&locations=Bkb,Jkb')
+            const query = getQuery('/trains?direction=s&locations=Bkb,Jkb&since=0:15&until=1:00')
             expect(query).to.match(/<LIKE name='AdvertisedTrainIdent' value='..13579/)
+            expect(query).to.match(/<GT name='TimeAtLocation' value='.dateadd.-0:15:00.' .>/)
             expect(query).to.match(/<LT name='TimeAtLocation' value='.dateadd.1:00:00.' .>/)
         })
 

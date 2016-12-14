@@ -36,21 +36,21 @@ module.exports = {
         <GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />
         <LT name='TimeAtLocation' value='$dateadd(0:12:00)' />`),
 
-    trains: (time, locations, direction) => announcementQuery(`
+    trains: (locations, since, until, direction) => announcementQuery(`
         ${(like(direction))}
         <OR> ${locations.map(location => `<EQ name='LocationSignature' value='${location}' />`).join(' ')} </OR>
         <OR>
          <AND>
-          <GT name='AdvertisedTimeAtLocation' value='$dateadd(-${time})' />
-          <LT name='AdvertisedTimeAtLocation' value='$dateadd(${time})' />
+          <GT name='AdvertisedTimeAtLocation' value='$dateadd(-${since}:00)' />
+          <LT name='AdvertisedTimeAtLocation' value='$dateadd(${until}:00)' />
          </AND>
          <AND>
-          <GT name='EstimatedTimeAtLocation' value='$dateadd(-${time})' />
-          <LT name='EstimatedTimeAtLocation' value='$dateadd(${time})' />
+          <GT name='EstimatedTimeAtLocation' value='$dateadd(-${since}:00)' />
+          <LT name='EstimatedTimeAtLocation' value='$dateadd(${until}:00)' />
          </AND>
          <AND>
-          <GT name='TimeAtLocation' value='$dateadd(-${time})' />
-          <LT name='TimeAtLocation' value='$dateadd(${time})' />
+          <GT name='TimeAtLocation' value='$dateadd(-${since}:00)' />
+          <LT name='TimeAtLocation' value='$dateadd(${until}:00)' />
          </AND>
         </OR>`
     ),

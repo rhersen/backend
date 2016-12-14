@@ -16,11 +16,11 @@ module.exports = url => {
         return query.current()
 
     if (/ingela/.test(url))
-        return query.trains('1:30:00', ['Tul', 'Åbe', 'Sub'])
+        return query.trains(['Tul', 'Åbe', 'Sub'], '1:30', '1:30')
 
     if (match = /trains\?(.*)/.exec(url)) {
         const params = parse(match[1])
-        return query.trains('1:00:00', params.locations.split(','), params.direction)
+        return query.trains(params.locations.split(','), params.since, params.until, params.direction)
     }
 
     if (match = /train.(\d\d\d\d)/.exec(url))
