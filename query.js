@@ -3,7 +3,7 @@ const key = require('./key')
 function announcementQuery(filters) {
     return `<REQUEST>
      <LOGIN authenticationkey='${key}' />
-     <QUERY objecttype='TrainAnnouncement' lastmodified='true' orderBy='AdvertisedTimeAtLocation'>
+     <QUERY objecttype='TrainAnnouncement' lastmodified='true' orderby='AdvertisedTimeAtLocation'>
       <FILTER>
        <AND>
         <IN name='ProductInformation' value='Pendeltåg' />
