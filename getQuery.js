@@ -18,6 +18,11 @@ module.exports = url => {
     if (/ingela/.test(url))
         return query.trains(['Tul', 'Åbe', 'Sub'], '1:30', '1:30')
 
+    if (match = /departures\?(.*)/.exec(url)) {
+        const params = parse(match[1])
+        return query.departures(params.locations.split(','), params.since, params.until, params.direction)
+    }
+
     if (match = /trains\?(.*)/.exec(url)) {
         const params = parse(match[1])
         return query.trains(params.locations.split(','), params.since, params.until, params.direction)

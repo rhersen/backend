@@ -22,21 +22,20 @@ function announcementQuery(filters) {
     </REQUEST>`
 }
 
-
-function like(direction) {
+function directionFilter(direction) {
     return `<LIKE name='AdvertisedTrainIdent' value='/[${direction === 'n' ? '02468' : '13579'}]$/' />`
 }
 
+function departureFilter() {
+    return "<EQ name='ActivityType' value='Avgang' />"
+}
 
-module.exports = {
-    current: () => announcementQuery([
-        "<GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />",
-        "<LT name='TimeAtLocation' value='$dateadd(0:12:00)' />"]),
+function locationFilter(locations) {
+    return `<OR> ${locations.map(location => `<EQ name='LocationSignature' value='${location}' />`).join(' ')} </OR>`
+}
 
-    trains: (locations, since, until, direction) => {
-        const filters = [
-            `<OR> ${locations.map(location => `<EQ name='LocationSignature' value='${location}' />`).join(' ')} </OR>`,
-            `<OR>
+function timeFilter(since, until) {
+    return `<OR>
              <AND>
               <GT name='AdvertisedTimeAtLocation' value='$dateadd(-${since}:00)' />
               <LT name='AdvertisedTimeAtLocation' value='$dateadd(${until}:00)' />
@@ -49,10 +48,30 @@ module.exports = {
               <GT name='TimeAtLocation' value='$dateadd(-${since}:00)' />
               <LT name='TimeAtLocation' value='$dateadd(${until}:00)' />
              </AND>
-            </OR>`]
+            </OR>`
+}
 
-        return announcementQuery(direction ? [like(direction).concat(filters)] : filters)
-    },
+module.exports = {
+    current: () => announcementQuery([
+        "<GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />",
+        "<LT name='TimeAtLocation' value='$dateadd(0:12:00)' />"]),
+
+    trains: (locations, since, until, direction) =>
+        direction ?
+            announcementQuery([directionFilter(direction), locationFilter(locations), timeFilter(since, until)]) :
+            announcementQuery([locationFilter(locations), timeFilter(since, until)]),
+
+    departures: (locations, since, until, direction) =>
+        direction ?
+            announcementQuery([
+                directionFilter(direction),
+                locationFilter(locations),
+                departureFilter(),
+                timeFilter(since, until)]) :
+            announcementQuery([
+                locationFilter(locations),
+                departureFilter(),
+                timeFilter(since, until)]),
 
     train: id => announcementQuery([
         `<EQ name='AdvertisedTrainIdent' value='${id}' />`,

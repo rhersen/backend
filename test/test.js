@@ -51,4 +51,13 @@ describe('getQuery', () => {
             expect(query).to.match(/<EQ name='LocationSignature' value='Rön' .>/)
         })
     })
+
+    describe('departures', () => {
+        it('both directions', () => {
+            const query = getQuery('/departures?locations=Bkb,Rön')
+            expect(query).to.match(/<EQ name='ActivityType' value='Avgang' .>/)
+            expect(query).to.match(/<EQ name='LocationSignature' value='Bkb' .>/)
+            expect(query).to.match(/<EQ name='LocationSignature' value='Rön' .>/)
+        })
+    })
 })
