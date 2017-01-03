@@ -75,6 +75,6 @@ module.exports = {
 
     train: id => announcementQuery([
         `<EQ name='AdvertisedTrainIdent' value='${id}' />`,
-        "<GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />",
-        "<LT name='TimeAtLocation' value='$dateadd(0:12:00)' />"])
+        "<GT name='AdvertisedTimeAtLocation' value='$dateadd(-6:00:00)' />",
+        "<LT name='AdvertisedTimeAtLocation' value='$dateadd(6:00:00)' />"])
 }
