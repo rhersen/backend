@@ -17,10 +17,18 @@ describe('getQuery', () => {
         expect(query).to.not.match(/<LIKE name='AdvertisedTrainIdent' value='..13579/)
     })
 
-    it('current', () => {
-        const query = getQuery('/current')
-        expect(query).to.match(/<LT name='TimeAtLocation' value='.dateadd.0:12:00.' .>/)
-        expect(query).to.not.match(/name='AdvertisedTrainIdent'/)
+    describe('current', () => {
+        it('without direction', () => {
+            const query = getQuery('/current')
+            expect(query).to.match(/<LT name='TimeAtLocation' value='.dateadd.0:12:00.' .>/)
+            expect(query).to.not.match(/name='AdvertisedTrainIdent'/)
+        })
+
+        it('with direction', () => {
+            const query = getQuery('/current?direction=n')
+            expect(query).to.match(/<LT name='TimeAtLocation' value='.dateadd.0:12:00.' .>/)
+            expect(query).to.match(/<LIKE name='AdvertisedTrainIdent' value='..02468/)
+        })
     })
 
     it('train', () => {

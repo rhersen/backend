@@ -12,6 +12,11 @@ function parse(queryString) {
 module.exports = url => {
     let match
 
+    if (match = /current\?(.*)/.exec(url)) {
+        const params = parse(match[1])
+        return query.current(params.direction)
+    }
+
     if (/current/.test(url))
         return query.current()
 

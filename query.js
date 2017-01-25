@@ -52,9 +52,15 @@ function timeFilter(since, until) {
 }
 
 module.exports = {
-    current: () => announcementQuery([
-        "<GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />",
-        "<LT name='TimeAtLocation' value='$dateadd(0:12:00)' />"]),
+    current: (direction) =>
+        direction ?
+            announcementQuery([
+                directionFilter(direction),
+                "<GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />",
+                "<LT name='TimeAtLocation' value='$dateadd(0:12:00)' />"]) :
+            announcementQuery([
+                "<GT name='TimeAtLocation' value='$dateadd(-0:12:00)' />",
+                "<LT name='TimeAtLocation' value='$dateadd(0:12:00)' />"]),
 
     trains: (locations, since, until, direction) =>
         direction ?
