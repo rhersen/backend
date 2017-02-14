@@ -52,7 +52,7 @@ function timeFilter(since, until) {
 }
 
 module.exports = {
-    current: (direction, since, until) =>
+    current: (direction) =>
         direction ?
             announcementQuery([directionFilter(direction), timeFilter('0:12', '0:12')]) :
             announcementQuery([timeFilter('0:12', '0:12')]),
