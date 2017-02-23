@@ -31,7 +31,10 @@ function stations(respond, handleError) {
         let body = ''
         incomingResponse.setEncoding('utf8')
         incomingResponse.on('data', chunk => body += chunk)
-        incomingResponse.on('end', () => respond(cache = body))
+        incomingResponse.on(
+            'end',
+            () => respond(cache = body.replace(/"POINT \((\d+\.\d+) (\d+\.\d+)\)"/g, '{"east":$1,"north":$2}'))
+        )
     }
 }
 
@@ -50,6 +53,7 @@ function query() {
       </FILTER>
       <INCLUDE>LocationSignature</INCLUDE>
       <INCLUDE>AdvertisedShortLocationName</INCLUDE>
+      <INCLUDE>Geometry</INCLUDE>
      </QUERY>
     </REQUEST>`
 }
