@@ -33,6 +33,6 @@ module.exports = url => {
         return query.trains(params.locations.split(','), params.since, params.until, params.direction)
     }
 
-    if (match = /train.(\d\d\d\d)/.exec(url))
+    if (match = /train.(\d+)/.exec(url))
         return query.train(match[1])
 }
