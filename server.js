@@ -1,5 +1,6 @@
 const atob = require('atob')
 
+const sl = require('./sl')
 const sendRequest = require('./sendRequest')
 const stations = require('./stations')
 const getQuery = require('./getQuery')
@@ -10,6 +11,8 @@ function requestListener(incomingRequest, outgoingResponse) {
 
     if (q)
         sendRequest(q, outgoingResponse)
+    else if (/sl/.test(url))
+        sl.json(outgoingResponse)
     else if (/stations/.test(url))
         stations.json(outgoingResponse)
     else

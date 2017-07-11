@@ -1,6 +1,6 @@
 const http = require('http')
 
-const key = require('./key')
+const key = require('./key').trafikverket
 
 let cache = false
 

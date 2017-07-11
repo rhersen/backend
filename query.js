@@ -1,4 +1,4 @@
-const key = require('./key')
+const key = require('./key').trafikverket
 
 function announcementQuery(filters) {
     return `<REQUEST>

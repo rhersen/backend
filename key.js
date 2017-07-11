@@ -1,1 +1,4 @@
-module.exports = 'invalid'
+module.exports = {
+    trafikverket: 'invalid',
+    sl: 'invalid'
+}
