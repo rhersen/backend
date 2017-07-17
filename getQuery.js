@@ -6,6 +6,7 @@ function parse(queryString) {
     return fromPairs(queryString
         .split('&')
         .map(s => /(\w+)=(.*)/.exec(s))
+        .filter(m => m)
         .map(m => [m[1], m[2]]))
 }
 
@@ -25,12 +26,16 @@ module.exports = url => {
 
     if (match = /departures\?(.*)/.exec(url)) {
         const params = parse(match[1])
-        return query.departures(params.locations.split(','), params.since, params.until, params.direction)
+
+        if (params.locations)
+            return query.departures(params.locations.split(','), params.since, params.until, params.direction)
     }
 
     if (match = /trains\?(.*)/.exec(url)) {
         const params = parse(match[1])
-        return query.trains(params.locations.split(','), params.since, params.until, params.direction)
+
+        if (params.locations)
+            return query.trains(params.locations.split(','), params.since, params.until, params.direction)
     }
 
     if (match = /train.(\d+)/.exec(url))
