@@ -2,11 +2,11 @@ const http = require('http')
 
 const key = require('./key').sl
 
-function stations(respond, handleError) {
+function send(query, respond, handleError) {
     const options = {
         hostname: 'api.sl.se',
         port: 80,
-        path: `/api2/realtimedeparturesV4.json?key=${key}&siteid=9001&timewindow=60`,
+        path: query,
         method: 'GET'
     }
 
@@ -27,7 +27,13 @@ function stations(respond, handleError) {
 }
 
 module.exports = {
-    json: outgoingResponse => stations(
+    query: (url) => {
+        let match = /locations=(\d+)/.exec(url)
+        if (match)
+            return `/api2/realtimedeparturesV4.json?key=${key}&siteid=${match[1]}&timewindow=60`
+    },
+    json: (query, outgoingResponse) => send(
+        query,
         body => {
             outgoingResponse.writeHead(200, {
                 'Content-Type': 'application/json; charset=utf-8',

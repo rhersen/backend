@@ -11,10 +11,10 @@ function requestListener(incomingRequest, outgoingResponse) {
 
     if (q)
         sendRequest(q, outgoingResponse)
-    else if (/sl/.test(url))
-        sl.json(outgoingResponse)
     else if (/stations/.test(url))
         stations.json(outgoingResponse)
+    else if (sl.query(url))
+        sl.json(sl.query(url), outgoingResponse)
     else
         favicon(outgoingResponse)
 }

@@ -1,6 +1,7 @@
 const expect = require('chai').expect
 
 const getQuery = require('../getQuery')
+const sl = require('../sl')
 
 describe('getQuery', () => {
     it('no url', () => {
@@ -67,5 +68,12 @@ describe('getQuery', () => {
             expect(query).to.match(/<EQ name='LocationSignature' value='Bkb' .>/)
             expect(query).to.match(/<EQ name='LocationSignature' value='Rön' .>/)
         })
+    })
+})
+
+describe('sl', () => {
+    it('query', () => {
+        expect(sl.query('/sl?locations=9001')).to.match(/api2.realtimedeparturesV4.json\?key=.+&siteid=9001&timewindow=60/)
+        expect(sl.query('/sl')).to.be.undefined
     })
 })
