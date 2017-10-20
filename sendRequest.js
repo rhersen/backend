@@ -4,7 +4,7 @@ module.exports = (postData, outgoingResponse) => {
     const options = {
         hostname: 'api.trafikinfo.trafikverket.se',
         port: 80,
-        path: '/v1.1/data.json',
+        path: '/v1.2/data.json',
         method: 'POST',
         headers: {
             'Content-Length': Buffer.byteLength(postData)
