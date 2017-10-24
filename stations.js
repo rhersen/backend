@@ -1,26 +1,36 @@
-const request = require('superagent')
+const request = require('superagent');
 
-const key = require('./key').trafikverket
+const key = require('./key').trafikverket;
 
-let cache = false
+let cache = false;
 
 function stations(respond, handleError) {
-    if (cache) {
-        respond(cache)
-        return
-    }
+  if (cache) {
+    respond(cache);
+    return;
+  }
 
-    const postData = query()
+  const postData = query();
 
-    request
-        .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
-        .type('xml')
-        .send(postData)
-        .end((err, res) => err ? handleError(err) : respond(cache = res.text.replace(/"POINT \((\d+\.\d+) (\d+\.\d+)\)"/g, '{"east":$1,"north":$2}')))
+  request
+    .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
+    .type('xml')
+    .send(postData)
+    .end(
+      (err, res) =>
+        err
+          ? handleError(err)
+          : respond(
+              (cache = res.text.replace(
+                /"POINT \((\d+\.\d+) (\d+\.\d+)\)"/g,
+                '{"east":$1,"north":$2}'
+              ))
+            )
+    );
 }
 
 function query() {
-    return `<REQUEST>
+  return `<REQUEST>
      <LOGIN authenticationkey='${key}' />
      <QUERY objecttype='TrainStation'>
       <FILTER>
@@ -36,22 +46,23 @@ function query() {
       <INCLUDE>AdvertisedShortLocationName</INCLUDE>
       <INCLUDE>Geometry</INCLUDE>
      </QUERY>
-    </REQUEST>`
+    </REQUEST>`;
 }
 
 module.exports = {
-    json: outgoingResponse => stations(
-        body => {
-            outgoingResponse.writeHead(200, {
-                'Content-Type': 'application/json; charset=utf-8',
-                'Cache-Control': 'no-cache'
-            })
-            outgoingResponse.write(body)
-            outgoingResponse.end()
-        },
-        function handleError(e) {
-            outgoingResponse.writeHead(500, {'Content-Type': 'text/plain'})
-            outgoingResponse.end(`problem with request: ${e.message}`)
-        }
+  json: outgoingResponse =>
+    stations(
+      body => {
+        outgoingResponse.writeHead(200, {
+          'Content-Type': 'application/json; charset=utf-8',
+          'Cache-Control': 'no-cache'
+        });
+        outgoingResponse.write(body);
+        outgoingResponse.end();
+      },
+      function handleError(e) {
+        outgoingResponse.writeHead(500, { 'Content-Type': 'text/plain' });
+        outgoingResponse.end(`problem with request: ${e.message}`);
+      }
     )
-}
+};
