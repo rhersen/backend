@@ -10,16 +10,20 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "atob": "^2.0.3",
-    "lodash.includes": "4.x",
     "lodash.foreach": "4.x",
     "lodash.frompairs": "4.x",
     "lodash.groupby": "4.x",
+    "lodash.includes": "4.x",
     "lodash.map": "4.x",
     "lodash.maxby": "4.x",
-    "moment": "^2.13.0"
+    "moment": "^2.13.0",
+    "superagent": "^3.7.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
-    "mocha": "^2.5.3"
+    "eslint": "^4.9.0",
+    "eslint-plugin-prettier": "^2.3.1",
+    "mocha": "^2.5.3",
+    "prettier": "^1.7.4"
   }
 }

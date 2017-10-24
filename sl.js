@@ -1,29 +1,11 @@
-const http = require('http')
+const request = require('superagent')
 
 const key = require('./key').sl
 
 function send(query, respond, handleError) {
-    const options = {
-        hostname: 'api.sl.se',
-        port: 80,
-        path: query,
-        method: 'GET'
-    }
-
-    const outgoingRequest = http.request(options, handleResponse)
-    outgoingRequest.on('error', handleError)
-
-    outgoingRequest.end()
-
-    function handleResponse(incomingResponse) {
-        let body = ''
-        incomingResponse.setEncoding('utf8')
-        incomingResponse.on('data', chunk => body += chunk)
-        incomingResponse.on(
-            'end',
-            () => respond(body)
-        )
-    }
+    request
+        .get('http://api.sl.se/v1.2/data.json/' + query)
+        .end((err, res) => err ? handleError(err) : respond(res.text))
 }
 
 module.exports = {

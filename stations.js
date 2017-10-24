@@ -1,4 +1,4 @@
-const http = require('http')
+const request = require('superagent')
 
 const key = require('./key').trafikverket
 
@@ -11,31 +11,12 @@ function stations(respond, handleError) {
     }
 
     const postData = query()
-    const options = {
-        hostname: 'api.trafikinfo.trafikverket.se',
-        port: 80,
-        path: '/v1.1/data.json',
-        method: 'POST',
-        headers: {
-            'Content-Length': Buffer.byteLength(postData)
-        }
-    }
 
-    const outgoingRequest = http.request(options, handleResponse)
-    outgoingRequest.on('error', handleError)
-    outgoingRequest.write(postData)
-
-    outgoingRequest.end()
-
-    function handleResponse(incomingResponse) {
-        let body = ''
-        incomingResponse.setEncoding('utf8')
-        incomingResponse.on('data', chunk => body += chunk)
-        incomingResponse.on(
-            'end',
-            () => respond(cache = body.replace(/"POINT \((\d+\.\d+) (\d+\.\d+)\)"/g, '{"east":$1,"north":$2}'))
-        )
-    }
+    request
+        .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
+        .type('xml')
+        .send(postData)
+        .end((err, res) => err ? handleError(err) : respond(cache = res.text.replace(/"POINT \((\d+\.\d+) (\d+\.\d+)\)"/g, '{"east":$1,"north":$2}')))
 }
 
 function query() {

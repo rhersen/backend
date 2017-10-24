@@ -1,27 +1,11 @@
-const http = require('http')
+const request = require('superagent')
 
 module.exports = (postData, outgoingResponse) => {
-    const options = {
-        hostname: 'api.trafikinfo.trafikverket.se',
-        port: 80,
-        path: '/v1.2/data.json',
-        method: 'POST',
-        headers: {
-            'Content-Length': Buffer.byteLength(postData)
-        }
-    }
-
-    const outgoingRequest = http.request(options, handleResponse)
-    outgoingRequest.on('error', handleError)
-    outgoingRequest.write(postData)
-    outgoingRequest.end()
-
-    function handleResponse(incomingResponse) {
-        let body = ''
-        incomingResponse.setEncoding('utf8')
-        incomingResponse.on('data', chunk => body += chunk)
-        incomingResponse.on('end', () => respond(body))
-    }
+    request
+        .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
+        .type('xml')
+        .send(postData)
+        .end((err, res) => err ? handleError(err) : respond(res.text))
 
     function handleError(e) {
         outgoingResponse.writeHead(500, {'Content-Type': 'text/plain'})
