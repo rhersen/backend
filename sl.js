@@ -5,7 +5,7 @@ const key = require('./key').sl;
 function send(query, respond, handleError) {
   request
     .get('http://api.sl.se/v1.2/data.json/' + query)
-    .end((err, res) => (err ? handleError(err) : respond(res.text)));
+    .then(respond, handleError);
 }
 
 module.exports = {
@@ -20,12 +20,12 @@ module.exports = {
   json: (query, outgoingResponse) =>
     send(
       query,
-      body => {
+      res => {
         outgoingResponse.writeHead(200, {
           'Content-Type': 'application/json; charset=utf-8',
           'Cache-Control': 'no-cache'
         });
-        outgoingResponse.write(body);
+        outgoingResponse.write(res.text);
         outgoingResponse.end();
       },
       function handleError(e) {

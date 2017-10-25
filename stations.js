@@ -16,16 +16,15 @@ function stations(respond, handleError) {
     .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
     .type('xml')
     .send(postData)
-    .end(
-      (err, res) =>
-        err
-          ? handleError(err)
-          : respond(
-              (cache = res.text.replace(
-                /"POINT \((\d+\.\d+) (\d+\.\d+)\)"/g,
-                '{"east":$1,"north":$2}'
-              ))
-            )
+    .then(
+      res =>
+        respond(
+          (cache = res.text.replace(
+            /"POINT \((\d+\.\d+) (\d+\.\d+)\)"/g,
+            '{"east":$1,"north":$2}'
+          ))
+        ),
+      handleError
     );
 }
 
