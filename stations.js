@@ -4,28 +4,27 @@ const key = require('./key').trafikverket;
 
 let cache = false;
 
-function stations(respond, handleError) {
+async function stations(respond, handleError) {
   if (cache) {
     respond(cache);
     return;
   }
 
-  const postData = query();
+  try {
+    const res = await request
+      .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
+      .type('xml')
+      .send(query());
 
-  request
-    .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
-    .type('xml')
-    .send(postData)
-    .then(
-      res =>
-        respond(
-          (cache = res.text.replace(
-            /"POINT \((\d+\.\d+) (\d+\.\d+)\)"/g,
-            '{"east":$1,"north":$2}'
-          ))
-        ),
-      handleError
+    respond(
+      (cache = res.text.replace(
+        /"POINT \((\d+\.\d+) (\d+\.\d+)\)"/g,
+        '{"east":$1,"north":$2}'
+      ))
     );
+  } catch (e) {
+    handleError(e);
+  }
 }
 
 function query() {
