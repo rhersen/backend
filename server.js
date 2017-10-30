@@ -2,6 +2,7 @@ const atob = require('atob');
 
 const sl = require('./sl');
 const sendRequest = require('./sendRequest');
+const pendel = require('./pendel');
 const stations = require('./stations');
 const getQuery = require('./getQuery');
 
@@ -10,6 +11,7 @@ function requestListener(incomingRequest, outgoingResponse) {
   const q = getQuery(url);
 
   if (q) sendRequest(q, outgoingResponse);
+  else if (/pendel/.test(url)) pendel.json(outgoingResponse);
   else if (/stations/.test(url)) stations.json(outgoingResponse);
   else if (sl.query(url)) sl.json(sl.query(url), outgoingResponse);
   else favicon(outgoingResponse);

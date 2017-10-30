@@ -10,12 +10,10 @@
   "license": "BSD-2-Clause",
   "dependencies": {
     "atob": "^2.0.3",
-    "lodash.foreach": "4.x",
     "lodash.frompairs": "4.x",
-    "lodash.groupby": "4.x",
     "lodash.includes": "4.x",
     "lodash.map": "4.x",
-    "lodash.maxby": "4.x",
+    "lodash.uniq": "4.x",
     "moment": "^2.13.0",
     "superagent": "^3.7.0"
   },
