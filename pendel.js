@@ -72,7 +72,7 @@ function trainQuery() {
         <IN name='ProductInformation' value='Pendeltåg' />
         <EQ name='ActivityType' value='Avgang' />
         <GT name='AdvertisedTimeAtLocation' value='$dateadd(0:00:00)' />
-        <LT name='AdvertisedTimeAtLocation' value='$dateadd(0:16:00)' />
+        <LT name='AdvertisedTimeAtLocation' value='$dateadd(0:59:00)' />
        </AND>
       </FILTER>
       <INCLUDE>LocationSignature</INCLUDE>
