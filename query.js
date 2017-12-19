@@ -1,7 +1,21 @@
 const key = require('./key').trafikverket
 
+const includes = [
+  'LocationSignature',
+  'AdvertisedTrainIdent',
+  'AdvertisedTimeAtLocation',
+  'Deviation',
+  'EstimatedTimeAtLocation',
+  'ProductInformation',
+  'TimeAtLocation',
+  'TrackAtLocation',
+  'ToLocation',
+  'ViaToLocation',
+  'ActivityType'
+];
+
 function announcementQuery(filters) {
-    return `<REQUEST>
+  return `<REQUEST>
      <LOGIN authenticationkey='${key}' />
      <QUERY objecttype='TrainAnnouncement' lastmodified='true' orderby='AdvertisedTimeAtLocation'>
       <FILTER>
@@ -11,13 +25,9 @@ function announcementQuery(filters) {
         ${filters.join('\n')}
        </AND>
       </FILTER>
-      <INCLUDE>LocationSignature</INCLUDE>
-      <INCLUDE>AdvertisedTrainIdent</INCLUDE>
-      <INCLUDE>AdvertisedTimeAtLocation</INCLUDE>
-      <INCLUDE>EstimatedTimeAtLocation</INCLUDE>
-      <INCLUDE>TimeAtLocation</INCLUDE>
-      <INCLUDE>ToLocation</INCLUDE>
-      <INCLUDE>ActivityType</INCLUDE>
+      ${includes
+        .map(include => '<INCLUDE>' + include + '</INCLUDE>')
+        .join('\n')}
      </QUERY>
     </REQUEST>`
 }
