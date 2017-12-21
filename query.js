@@ -1,4 +1,5 @@
-const key = require('./key').trafikverket
+const map = require('lodash/map');
+const key = require('./key').trafikverket;
 
 const includes = [
   'LocationSignature',
@@ -11,7 +12,7 @@ const includes = [
   'TrackAtLocation',
   'ToLocation',
   'ViaToLocation',
-  'ActivityType'
+  'ActivityType',
 ];
 
 function announcementQuery(filters) {
@@ -25,27 +26,30 @@ function announcementQuery(filters) {
         ${filters.join('\n')}
        </AND>
       </FILTER>
-      ${includes
-        .map(include => '<INCLUDE>' + include + '</INCLUDE>')
-        .join('\n')}
+      ${map(includes, include => `<INCLUDE>${include}</INCLUDE>`).join('\n')}
      </QUERY>
-    </REQUEST>`
+    </REQUEST>`;
 }
 
 function directionFilter(direction) {
-    return `<LIKE name='AdvertisedTrainIdent' value='/[${direction === 'n' ? '02468' : '13579'}]$/' />`
+  return `<LIKE name='AdvertisedTrainIdent' value='/[${direction === 'n'
+    ? '02468'
+    : '13579'}]$/' />`;
 }
 
 function departureFilter() {
-    return "<EQ name='ActivityType' value='Avgang' />"
+  return "<EQ name='ActivityType' value='Avgang' />";
 }
 
 function locationFilter(locations) {
-    return `<OR> ${locations.map(location => `<EQ name='LocationSignature' value='${location}' />`).join(' ')} </OR>`
+  return `<OR> ${map(
+    locations,
+    location => `<EQ name='LocationSignature' value='${location}' />`
+  ).join(' ')} </OR>`;
 }
 
 function timeFilter(since, until) {
-    return `<OR>
+  return `<OR>
              <AND>
               <GT name='AdvertisedTimeAtLocation' value='$dateadd(-${since}:00)' />
               <LT name='AdvertisedTimeAtLocation' value='$dateadd(${until}:00)' />
@@ -58,34 +62,48 @@ function timeFilter(since, until) {
               <GT name='TimeAtLocation' value='$dateadd(-${since}:00)' />
               <LT name='TimeAtLocation' value='$dateadd(${until}:00)' />
              </AND>
-            </OR>`
+            </OR>`;
 }
 
 module.exports = {
-    current: (direction) =>
-        direction ?
-            announcementQuery([directionFilter(direction), timeFilter('0:12', '0:12')]) :
-            announcementQuery([timeFilter('0:12', '0:12')]),
+  current: direction =>
+    direction
+      ? announcementQuery([
+          directionFilter(direction),
+          timeFilter('0:12', '0:12'),
+        ])
+      : announcementQuery([timeFilter('0:12', '0:12')]),
 
-    trains: (locations, since, until, direction) =>
-        direction ?
-            announcementQuery([directionFilter(direction), locationFilter(locations), timeFilter(since, until)]) :
-            announcementQuery([locationFilter(locations), timeFilter(since, until)]),
+  trains: (locations, since, until, direction) =>
+    direction
+      ? announcementQuery([
+          directionFilter(direction),
+          locationFilter(locations),
+          timeFilter(since, until),
+        ])
+      : announcementQuery([
+          locationFilter(locations),
+          timeFilter(since, until),
+        ]),
 
-    departures: (locations, since, until, direction) =>
-        direction ?
-            announcementQuery([
-                directionFilter(direction),
-                locationFilter(locations),
-                departureFilter(),
-                timeFilter(since, until)]) :
-            announcementQuery([
-                locationFilter(locations),
-                departureFilter(),
-                timeFilter(since, until)]),
+  departures: (locations, since, until, direction) =>
+    direction
+      ? announcementQuery([
+          directionFilter(direction),
+          locationFilter(locations),
+          departureFilter(),
+          timeFilter(since, until),
+        ])
+      : announcementQuery([
+          locationFilter(locations),
+          departureFilter(),
+          timeFilter(since, until),
+        ]),
 
-    train: id => announcementQuery([
-        `<EQ name='AdvertisedTrainIdent' value='${id}' />`,
-        "<GT name='AdvertisedTimeAtLocation' value='$dateadd(-6:00:00)' />",
-        "<LT name='AdvertisedTimeAtLocation' value='$dateadd(6:00:00)' />"])
-}
+  train: id =>
+    announcementQuery([
+      `<EQ name='AdvertisedTrainIdent' value='${id}' />`,
+      "<GT name='AdvertisedTimeAtLocation' value='$dateadd(-6:00:00)' />",
+      "<LT name='AdvertisedTimeAtLocation' value='$dateadd(6:00:00)' />",
+    ]),
+};

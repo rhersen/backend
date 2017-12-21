@@ -4,7 +4,7 @@ const key = require('./key').sl;
 
 module.exports = {
   query: url => {
-    let match = /locations=(\d+)/.exec(url);
+    const match = /locations=(\d+)/.exec(url);
     if (match)
       return (
         '/api2/realtimedeparturesV4.json' +
@@ -13,11 +13,11 @@ module.exports = {
   },
   json: async (query, outgoingResponse) => {
     try {
-      const res = await request.get('http://api.sl.se/v1.2/data.json/' + query);
+      const res = await request.get(`http://api.sl.se/v1.2/data.json/${query}`);
 
       outgoingResponse.writeHead(200, {
         'Content-Type': 'application/json; charset=utf-8',
-        'Cache-Control': 'no-cache'
+        'Cache-Control': 'no-cache',
       });
 
       outgoingResponse.write(res.text);
@@ -26,5 +26,5 @@ module.exports = {
       outgoingResponse.writeHead(500, { 'Content-Type': 'text/plain' });
       outgoingResponse.end(`problem with request: ${e.message}`);
     }
-  }
+  },
 };

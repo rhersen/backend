@@ -9,7 +9,7 @@ module.exports = async (postData, outgoingResponse) => {
 
     const head = {
       'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'no-cache'
+      'Cache-Control': 'no-cache',
     };
 
     outgoingResponse.writeHead(200, head);

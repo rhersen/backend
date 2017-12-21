@@ -1,5 +1,5 @@
+const replace = require('lodash/replace');
 const request = require('superagent');
-
 const key = require('./key').trafikverket;
 
 let cache = false;
@@ -17,7 +17,8 @@ async function stations(respond, handleError) {
       .send(query());
 
     respond(
-      (cache = res.text.replace(
+      (cache = replace(
+        res.text,
         /"POINT \((\d+\.\d+) (\d+\.\d+)\)"/g,
         '{"east":$1,"north":$2}'
       ))
@@ -53,14 +54,14 @@ module.exports = {
       body => {
         outgoingResponse.writeHead(200, {
           'Content-Type': 'application/json; charset=utf-8',
-          'Cache-Control': 'no-cache'
+          'Cache-Control': 'no-cache',
         });
         outgoingResponse.write(body);
         outgoingResponse.end();
       },
-      function handleError(e) {
+      e => {
         outgoingResponse.writeHead(500, { 'Content-Type': 'text/plain' });
         outgoingResponse.end(`problem with request: ${e.message}`);
       }
-    )
+    ),
 };

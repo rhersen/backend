@@ -36,12 +36,12 @@ module.exports = {
     function respond(body) {
       outgoingResponse.writeHead(200, {
         'Content-Type': 'application/json; charset=utf-8',
-        'Cache-Control': 'no-cache'
+        'Cache-Control': 'no-cache',
       });
       outgoingResponse.write(body);
       outgoingResponse.end();
     }
-  }
+  },
 };
 
 function stationQuery() {
