@@ -104,43 +104,17 @@ describe('pendel', () => {
         RESULT: [
           {
             TrainAnnouncement: [
-              {
-                LocationSignature: 'Flb',
-                ModifiedTime: '2017-10-27T15:05:48.496Z'
-              },
-              {
-                LocationSignature: 'Tu',
-                ModifiedTime: '2017-10-26T23:14:18.697Z'
-              },
-              {
-                LocationSignature: 'Sod',
-                ModifiedTime: '2017-10-26T23:14:38.014Z'
-              },
-              {
-                LocationSignature: 'Ts',
-                ModifiedTime: '2017-10-26T23:14:39.465Z'
-              },
-              {
-                LocationSignature: 'Sci',
-                ModifiedTime: '2017-10-27T13:33:55.559Z'
-              },
-              {
-                LocationSignature: 'Sol',
-                ModifiedTime: '2017-10-26T23:14:40.604Z'
-              },
-              {
-                LocationSignature: 'Äs',
-                ModifiedTime: '2017-10-27T13:29:27.544Z'
-              }
+              { LocationSignature: 'Flb' },
+              { LocationSignature: 'Tu' },
+              { LocationSignature: 'Sod' },
+              { LocationSignature: 'Ts' },
+              { LocationSignature: 'Sci' },
+              { LocationSignature: 'Sol' },
+              { LocationSignature: 'Äs' },
             ],
-            INFO: {
-              LASTMODIFIED: {
-                '@datetime': '2017-10-27T15:05:48.496Z'
-              }
-            }
-          }
-        ]
-      }
+          },
+        ],
+      },
     };
     const stations = {
       RESPONSE: {
@@ -150,33 +124,41 @@ describe('pendel', () => {
               {
                 AdvertisedShortLocationName: 'Farsta strand',
                 CountyNo: [2, 1],
-                LocationSignature: 'Fas'
+                Geometry: {
+                  SWEREF99TM: 'POINT (677073 6570533)',
+                  WGS84: 'POINT (18.1041371217327 59.2367049603428)',
+                },
+                LocationSignature: 'Fas',
               },
               {
                 AdvertisedShortLocationName: 'Flemingsberg',
                 CountyNo: [2, 1],
-                LocationSignature: 'Flb'
+                Geometry: {
+                  SWEREF99TM: 'POINT (668892 6532535)',
+                  WGS84: 'POINT (17.9317290389689 58.8992532022516)',
+                },
+                LocationSignature: 'Flb',
               },
               {
                 AdvertisedShortLocationName: 'Frösunda',
                 CountyNo: [2, 1],
-                LocationSignature: 'Fsu'
-              }
-            ]
-          }
-        ]
-      }
+                Geometry: {
+                  SWEREF99TM: 'POINT (671076 6584623)',
+                  WGS84: 'POINT (18.0103300208132 59.3655259341312)',
+                },
+                LocationSignature: 'Fsu',
+              },
+            ],
+          },
+        ],
+      },
     };
 
-    const expected = [
-      {
-        AdvertisedShortLocationName: 'Flemingsberg',
-        CountyNo: [2, 1],
-        LocationSignature: 'Flb'
-      }
-    ];
     const actual = filterPendel(trains, stations);
-    expect(actual).to.deep.equal(expected);
-    expect(actual[0]).to.deep.equal(expected[0]);
+    const flb = actual[0];
+    expect(flb.LocationSignature).to.equal('Flb');
+    expect(flb.AdvertisedShortLocationName).to.equal('Flemingsberg');
+    expect(flb.east).to.equal('17.9317290389689');
+    expect(flb.north).to.equal('58.8992532022516');
   });
 });
