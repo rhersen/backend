@@ -158,7 +158,7 @@ describe('pendel', () => {
     const flb = actual[0];
     expect(flb.LocationSignature).to.equal('Flb');
     expect(flb.AdvertisedShortLocationName).to.equal('Flemingsberg');
-    expect(flb.east).to.equal('17.9317290389689');
+    expect(flb.east).to.equal('17.931729038968');
     expect(flb.north).to.equal('58.8992532022516');
   });
 });
