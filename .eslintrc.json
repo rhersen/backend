@@ -1,6 +1,6 @@
 {
   "plugins": [
-    "lodash",
+    "lodash-fp",
     "prettier"
   ],
   "env": {
@@ -10,7 +10,7 @@
   },
   "extends": [
     "eslint:recommended",
-    "plugin:lodash/recommended"
+    "plugin:lodash-fp/recommended"
   ],
   "rules": {
     "prettier/prettier": [

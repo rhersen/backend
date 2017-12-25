@@ -1,4 +1,5 @@
-const map = require('lodash/map');
+const constant = require('lodash/fp/constant');
+const map = require('lodash/fp/map');
 const key = require('./key').trafikverket;
 
 const includes = [
@@ -26,9 +27,13 @@ function announcementQuery(filters) {
         ${filters.join('\n')}
        </AND>
       </FILTER>
-      ${map(includes, include => `<INCLUDE>${include}</INCLUDE>`).join('\n')}
+      ${map(xml, includes).join('\n')}
      </QUERY>
     </REQUEST>`;
+
+  function xml(include) {
+    return `<INCLUDE>${include}</INCLUDE>`;
+  }
 }
 
 function directionFilter(direction) {
@@ -37,15 +42,14 @@ function directionFilter(direction) {
     : '13579'}]$/' />`;
 }
 
-function departureFilter() {
-  return "<EQ name='ActivityType' value='Avgang' />";
-}
+const departureFilter = constant("<EQ name='ActivityType' value='Avgang' />");
 
 function locationFilter(locations) {
-  return `<OR> ${map(
-    locations,
-    location => `<EQ name='LocationSignature' value='${location}' />`
-  ).join(' ')} </OR>`;
+  return `<OR> ${map(equalsLocationSignature, locations).join(' ')} </OR>`;
+
+  function equalsLocationSignature(location) {
+    return `<EQ name='LocationSignature' value='${location}' />`;
+  }
 }
 
 function timeFilter(since, until) {

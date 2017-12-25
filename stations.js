@@ -1,4 +1,4 @@
-const replace = require('lodash/replace');
+const replace = require('lodash/fp/replace');
 const request = require('superagent');
 const key = require('./key').trafikverket;
 
@@ -18,9 +18,9 @@ async function stations(respond, handleError) {
 
     respond(
       (cache = replace(
-        res.text,
         /"POINT \((\d+\.\d+) (\d+\.\d+)\)"/g,
-        '{"east":$1,"north":$2}'
+        '{"east":$1,"north":$2}',
+        res.text
       ))
     );
   } catch (e) {

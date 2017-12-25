@@ -1,17 +1,22 @@
-const compact = require('lodash/compact');
-const fromPairs = require('lodash/frompairs');
-const map = require('lodash/map');
-const split = require('lodash/split');
+const compact = require('lodash/fp/compact');
+const fromPairs = require('lodash/fp/frompairs');
+const map = require('lodash/fp/map');
+const split = require('lodash/fp/split');
 
 const query = require('./query');
 
 function parse(queryString) {
   return fromPairs(
-    map(compact(map(split(queryString, '&'), s => /(\w+)=(.*)/.exec(s))), m => [
-      m[1],
-      m[2],
-    ])
+    map(pair, compact(map(matchParam, split('&', queryString))))
   );
+
+  function pair(m) {
+    return m.slice(1);
+  }
+
+  function matchParam(s) {
+    return /(\w+)=(.*)/.exec(s);
+  }
 }
 
 module.exports = url => {
@@ -32,7 +37,7 @@ module.exports = url => {
 
     if (params.locations)
       return query.departures(
-        split(params.locations, ','),
+        split(',', params.locations),
         params.since,
         params.until,
         params.direction
@@ -44,7 +49,7 @@ module.exports = url => {
 
     if (params.locations)
       return query.trains(
-        split(params.locations, ','),
+        split(',', params.locations),
         params.since,
         params.until,
         params.direction

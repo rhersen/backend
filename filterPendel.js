@@ -1,24 +1,28 @@
-const filter = require('lodash/filter');
-const includes = require('lodash/includes');
-const map = require('lodash/map');
-const uniq = require('lodash/uniq');
+const filter = require('lodash/fp/filter');
+const includes = require('lodash/fp/includes');
+const map = require('lodash/fp/map');
+const uniq = require('lodash/fp/uniq');
 
 module.exports = (trains, stations) => {
   const locations = uniq(
-    map(get(trains, 'TrainAnnouncement'), 'LocationSignature')
+    map('LocationSignature', get(trains, 'TrainAnnouncement'))
   );
 
   return map(
-    filter(get(stations, 'TrainStation'), station =>
-      includes(locations, station.LocationSignature)
-    ),
-    station => {
-      const match = /POINT \(([\d\\.]+) ([\d\\.]+)\)/.exec(
-        station.Geometry.WGS84
-      );
-      return { ...station, east: match[1], north: match[2] };
-    }
+    parseGeometry,
+    filter(includesLocation, get(stations, 'TrainStation'))
   );
+
+  function parseGeometry(station) {
+    const match = /POINT \(([\d\\.]+) ([\d\\.]+)\)/.exec(
+      station.Geometry.WGS84
+    );
+    return { ...station, east: match[1], north: match[2] };
+  }
+
+  function includesLocation(station) {
+    return includes(station.LocationSignature, locations);
+  }
 };
 
 function get(trafikinfo, field) {
