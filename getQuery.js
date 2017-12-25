@@ -1,31 +1,24 @@
 const compact = require('lodash/fp/compact');
 const fromPairs = require('lodash/fp/frompairs');
 const map = require('lodash/fp/map');
+const pipe = require('lodash/fp/pipe');
 const split = require('lodash/fp/split');
 
 const query = require('./query');
 
-function parse(queryString) {
-  return fromPairs(
-    map(pair, compact(map(matchParam, split('&', queryString))))
-  );
-
-  function pair(m) {
-    return m.slice(1);
-  }
-
-  function matchParam(s) {
-    return /(\w+)=(.*)/.exec(s);
-  }
-}
+const parse = pipe(
+  split('&'),
+  map(s => /(\w+)=(.*)/.exec(s)),
+  compact,
+  map(m => m.slice(1)),
+  fromPairs
+);
 
 module.exports = url => {
   let match;
 
-  if ((match = /current\?(.*)/.exec(url))) {
-    const params = parse(match[1]);
-    return query.current(params.direction);
-  }
+  if ((match = /current\?(.*)/.exec(url)))
+    return query.current(parse(match[1]).direction);
 
   if (/current/.test(url)) return query.current();
 
