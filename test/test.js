@@ -1,4 +1,4 @@
-const expect = require('chai').expect;
+const { expect } = require('chai');
 
 const getQuery = require('../getQuery');
 const filterPendel = require('../filterPendel');
@@ -155,7 +155,7 @@ describe('pendel', () => {
     };
 
     const actual = filterPendel(trains, stations);
-    const flb = actual[0];
+    const [flb] = actual;
     expect(flb.LocationSignature).to.equal('Flb');
     expect(flb.AdvertisedShortLocationName).to.equal('Flemingsberg');
     expect(flb.east).to.equal('17.9317290389689');

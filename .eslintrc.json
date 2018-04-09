@@ -13,16 +13,12 @@
     "plugin:lodash-fp/recommended"
   ],
   "rules": {
-    "prettier/prettier": [
-      "error",
-      {
-        "singleQuote": true,
-        "trailingComma": "es5"
-      }
-    ],
-    "prefer-arrow-callback": ["error"],
-    "prefer-const": ["error"],
-    "prefer-template": ["error"]
+    "prettier/prettier": "error",
+    "prefer-arrow-callback": "error",
+    "prefer-const": "error",
+    "prefer-destructuring": "error",
+    "prefer-spread": "error",
+    "prefer-template": "error"
   },
   "parser": "babel-eslint"
 }
