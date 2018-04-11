@@ -1,4 +1,5 @@
 const compact = require('lodash/fp/compact');
+const find = require('lodash/fp/find');
 const fromPairs = require('lodash/fp/fromPairs');
 const map = require('lodash/fp/map');
 const pipe = require('lodash/fp/pipe');
@@ -14,65 +15,63 @@ const parse = pipe(
   fromPairs
 );
 
-function currentDirection(url) {
-  const match = /current\?(.*)/.exec(url);
+const currentDirection = {
+  regExp: /current\?(.*)/,
+  getQuery: function(url) {
+    return query.current(parse(this.regExp.exec(url)[1]).direction);
+  },
+};
 
-  if (match) return query.current(parse(match[1]).direction);
-}
+const current = {
+  regExp: /current/,
+  getQuery: () => query.current(),
+};
 
-function current(url) {
-  if (/current/.test(url)) return query.current();
-}
+const ingela = {
+  regExp: /ingela/,
+  getQuery: () => query.trains(['Tul', 'Åbe', 'Sub'], '1:30', '1:30'),
+};
 
-function ingela(url) {
-  if (/ingela/.test(url))
-    return query.trains(['Tul', 'Åbe', 'Sub'], '1:30', '1:30');
-}
+const departures = {
+  regExp: /departures\?(.*)/,
+  getQuery: function(url) {
+    const params = parse(this.regExp.exec(url)[1]);
 
-function departures(url) {
-  const match = /departures\?(.*)/.exec(url);
+    return query.departures(
+      split(',', params.locations),
+      params.since,
+      params.until,
+      params.direction
+    );
+  },
+};
 
-  if (match) {
-    const params = parse(match[1]);
+const trains = {
+  regExp: /trains\?(.*)/,
+  getQuery: function(url) {
+    const params = parse(this.regExp.exec(url)[1]);
 
-    if (params.locations)
-      return query.departures(
-        split(',', params.locations),
-        params.since,
-        params.until,
-        params.direction
-      );
-  }
-}
+    return query.trains(
+      split(',', params.locations),
+      params.since,
+      params.until,
+      params.direction
+    );
+  },
+};
 
-function trains(url) {
-  const match = /trains\?(.*)/.exec(url);
-
-  if (match) {
-    const params = parse(match[1]);
-
-    if (params.locations)
-      return query.trains(
-        split(',', params.locations),
-        params.since,
-        params.until,
-        params.direction
-      );
-  }
-}
-
-function train(url) {
-  const match = /train.(\d+)/.exec(url);
-
-  if (match) return query.train(match[1]);
-}
+const train = {
+  regExp: /train.(\d+)/,
+  getQuery: function(url) {
+    return query.train(this.regExp.exec(url)[1]);
+  },
+};
 
 function getQuery(url) {
-  const fs = [currentDirection, current, ingela, departures, trains, train];
-  for (let i = 0; i < fs.length; i++) {
-    const q = fs[i](url);
-    if (q) return q;
-  }
+  const objs = [currentDirection, current, ingela, departures, trains, train];
+  const found = find(obj => obj.regExp.test(url), objs);
+
+  return found && found.getQuery(url);
 }
 
 module.exports = getQuery;
