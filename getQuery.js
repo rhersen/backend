@@ -1,5 +1,5 @@
 const compact = require('lodash/fp/compact');
-const fromPairs = require('lodash/fp/frompairs');
+const fromPairs = require('lodash/fp/fromPairs');
 const map = require('lodash/fp/map');
 const pipe = require('lodash/fp/pipe');
 const split = require('lodash/fp/split');
@@ -14,18 +14,25 @@ const parse = pipe(
   fromPairs
 );
 
-module.exports = url => {
-  let match;
+function currentDirection(url) {
+  const match = /current\?(.*)/.exec(url);
 
-  if ((match = /current\?(.*)/.exec(url)))
-    return query.current(parse(match[1]).direction);
+  if (match) return query.current(parse(match[1]).direction);
+}
 
+function current(url) {
   if (/current/.test(url)) return query.current();
+}
 
+function ingela(url) {
   if (/ingela/.test(url))
     return query.trains(['Tul', 'Åbe', 'Sub'], '1:30', '1:30');
+}
 
-  if ((match = /departures\?(.*)/.exec(url))) {
+function departures(url) {
+  const match = /departures\?(.*)/.exec(url);
+
+  if (match) {
     const params = parse(match[1]);
 
     if (params.locations)
@@ -36,8 +43,12 @@ module.exports = url => {
         params.direction
       );
   }
+}
 
-  if ((match = /trains\?(.*)/.exec(url))) {
+function trains(url) {
+  const match = /trains\?(.*)/.exec(url);
+
+  if (match) {
     const params = parse(match[1]);
 
     if (params.locations)
@@ -48,6 +59,20 @@ module.exports = url => {
         params.direction
       );
   }
+}
 
-  if ((match = /train.(\d+)/.exec(url))) return query.train(match[1]);
-};
+function train(url) {
+  const match = /train.(\d+)/.exec(url);
+
+  if (match) return query.train(match[1]);
+}
+
+function getQuery(url) {
+  const fs = [currentDirection, current, ingela, departures, trains, train];
+  for (let i = 0; i < fs.length; i++) {
+    const q = fs[i](url);
+    if (q) return q;
+  }
+}
+
+module.exports = getQuery;
