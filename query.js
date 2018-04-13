@@ -37,9 +37,8 @@ function announcementQuery(filters) {
 }
 
 function directionFilter(direction) {
-  return `<LIKE name='AdvertisedTrainIdent' value='/[${direction === 'n'
-    ? '02468'
-    : '13579'}]$/' />`;
+  const dir = direction === 'n' ? '02468' : '13579';
+  return `<LIKE name='AdvertisedTrainIdent' value='/[${dir}]$/' />`;
 }
 
 const departureFilter = constant("<EQ name='ActivityType' value='Avgang' />");
