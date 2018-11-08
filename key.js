@@ -1,4 +1,5 @@
 module.exports = {
-    trafikverket: 'invalid',
-    sl: 'invalid'
-}
+  trafikverket: 'invalid',
+  slRealtime: 'invalid',
+  slSites: 'invalid',
+};

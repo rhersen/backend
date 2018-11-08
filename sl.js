@@ -1,6 +1,6 @@
 const request = require('superagent');
 
-const key = require('./key').sl;
+const key = require('./key').slRealtime;
 
 module.exports = {
   query: url => {

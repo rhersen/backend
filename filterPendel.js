@@ -8,9 +8,7 @@ const reduce = require('lodash/fp/reduce');
 const replace = require('lodash/fp/replace');
 const uniq = require('lodash/fp/uniq');
 
-const lineData = require('./LineData');
-
-module.exports = (trains, stations) => {
+module.exports = (trains, stations, lineData) => {
   const locations = flow(
     map('LocationSignature'),
     uniq
