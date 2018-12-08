@@ -23,7 +23,6 @@ function announcementQuery(filters) {
      <QUERY objecttype='TrainAnnouncement' lastmodified='true' orderby='AdvertisedTimeAtLocation'>
       <FILTER>
        <AND>
-        <IN name='ProductInformation' value='Pendeltåg' />
         <NE name='Canceled' value='true' />
         ${filters.join('\n')}
        </AND>
@@ -43,6 +42,9 @@ function directionFilter(direction) {
 }
 
 const departureFilter = constant("<EQ name='ActivityType' value='Avgang' />");
+const pendelFilter = constant(
+  "<IN name='ProductInformation' value='Pendeltåg' />"
+);
 
 function locationFilter(locations) {
   return `<OR> ${map(equalsLocationSignature, locations).join(' ')} </OR>`;
@@ -73,6 +75,7 @@ module.exports = {
   current: direction =>
     announcementQuery(
       compact([
+        pendelFilter(),
         direction && directionFilter(direction),
         timeFilter('0:12', '0:12'),
       ])
@@ -81,6 +84,7 @@ module.exports = {
   trains: (locations, since, until, direction) =>
     announcementQuery(
       compact([
+        pendelFilter(),
         direction && directionFilter(direction),
         locationFilter(locations),
         timeFilter(since, until),
@@ -90,6 +94,7 @@ module.exports = {
   departures: (locations, since, until, direction) =>
     announcementQuery(
       compact([
+        pendelFilter(),
         direction && directionFilter(direction),
         locationFilter(locations),
         departureFilter(),
