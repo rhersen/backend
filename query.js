@@ -42,9 +42,10 @@ function directionFilter(direction) {
 }
 
 const departureFilter = constant("<EQ name='ActivityType' value='Avgang' />");
-const pendelFilter = constant(
-  "<IN name='ProductInformation' value='Pendeltåg' />"
-);
+
+function pendelFilter(value = 'Pendeltåg') {
+  return `<IN name='ProductInformation' value='${value}' />`;
+}
 
 function locationFilter(locations) {
   return `<OR> ${map(equalsLocationSignature, locations).join(' ')} </OR>`;
@@ -91,10 +92,10 @@ module.exports = {
       ])
     ),
 
-  departures: (locations, since, until, direction) =>
+  departures: (locations, since, until, type, direction) =>
     announcementQuery(
       compact([
-        pendelFilter(),
+        pendelFilter(type),
         direction && directionFilter(direction),
         locationFilter(locations),
         departureFilter(),

@@ -41,6 +41,7 @@ const departures = {
       split(',', params.locations),
       params.since,
       params.until,
+      params.type,
       params.direction
     );
   },

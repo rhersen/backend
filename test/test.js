@@ -94,6 +94,28 @@ describe('getQuery', () => {
       expect(query).to.match(/<EQ name='LocationSignature' value='Bkb' .>/);
       expect(query).to.match(/<EQ name='LocationSignature' value='Rön' .>/);
     });
+
+    it('time window', () => {
+      const query = getQuery('/departures?locations=Cst&since=0:10&until=1:00');
+      expect(query).to.match(/<EQ name='ActivityType' value='Avgang' .>/);
+      expect(query).to.match(/<EQ name='LocationSignature' value='Cst' .>/);
+      expect(query).to.match(
+        /<GT name='TimeAtLocation' value='.dateadd.-0:10:00.'/
+      );
+      expect(query).to.match(
+        /<LT name='TimeAtLocation' value='.dateadd.1:00:00.'/
+      );
+      expect(query).to.match(
+        /<IN name='ProductInformation' value='Pendeltåg' /
+      );
+    });
+
+    it('train type', () => {
+      const query = getQuery('/departures?type=Öresundståg');
+      expect(query).to.match(
+        /<IN name='ProductInformation' value='Öresundståg' /
+      );
+    });
   });
 });
 
