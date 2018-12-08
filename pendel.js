@@ -56,6 +56,7 @@ module.exports = {
       outgoingResponse.writeHead(200, {
         'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'no-cache',
+        'Access-Control-Allow-Origin': 'http://localhost:1234',
       });
       outgoingResponse.write(body);
       outgoingResponse.end();
