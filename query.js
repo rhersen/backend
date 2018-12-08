@@ -43,7 +43,11 @@ function directionFilter(direction) {
 
 const departureFilter = constant("<EQ name='ActivityType' value='Avgang' />");
 
-function pendelFilter(value = 'Pendeltåg') {
+function pendelFilter() {
+  return typeFilter('Pendeltåg');
+}
+
+function typeFilter(value = 'Pendeltåg') {
   return `<IN name='ProductInformation' value='${value}' />`;
 }
 
@@ -95,7 +99,7 @@ module.exports = {
   departures: (locations, since, until, type, direction) =>
     announcementQuery(
       compact([
-        pendelFilter(type),
+        typeFilter(type),
         direction && directionFilter(direction),
         locationFilter(locations),
         departureFilter(),
