@@ -1,3 +1,4 @@
+const compact = require('lodash/fp/compact');
 const constant = require('lodash/fp/constant');
 const map = require('lodash/fp/map');
 const key = require('./key').trafikverket;
@@ -70,38 +71,31 @@ function timeFilter(since, until) {
 
 module.exports = {
   current: direction =>
-    direction
-      ? announcementQuery([
-          directionFilter(direction),
-          timeFilter('0:12', '0:12'),
-        ])
-      : announcementQuery([timeFilter('0:12', '0:12')]),
+    announcementQuery(
+      compact([
+        direction && directionFilter(direction),
+        timeFilter('0:12', '0:12'),
+      ])
+    ),
 
   trains: (locations, since, until, direction) =>
-    direction
-      ? announcementQuery([
-          directionFilter(direction),
-          locationFilter(locations),
-          timeFilter(since, until),
-        ])
-      : announcementQuery([
-          locationFilter(locations),
-          timeFilter(since, until),
-        ]),
+    announcementQuery(
+      compact([
+        direction && directionFilter(direction),
+        locationFilter(locations),
+        timeFilter(since, until),
+      ])
+    ),
 
   departures: (locations, since, until, direction) =>
-    direction
-      ? announcementQuery([
-          directionFilter(direction),
-          locationFilter(locations),
-          departureFilter(),
-          timeFilter(since, until),
-        ])
-      : announcementQuery([
-          locationFilter(locations),
-          departureFilter(),
-          timeFilter(since, until),
-        ]),
+    announcementQuery(
+      compact([
+        direction && directionFilter(direction),
+        locationFilter(locations),
+        departureFilter(),
+        timeFilter(since, until),
+      ])
+    ),
 
   train: id =>
     announcementQuery([
