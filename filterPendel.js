@@ -1,13 +1,23 @@
 const filter = require('lodash/fp/filter');
+const includes = require('lodash/fp/includes');
 const flow = require('lodash/fp/flow');
 const get = require('lodash/fp/get');
 const map = require('lodash/fp/map');
 const max = require('lodash/fp/max');
 const reduce = require('lodash/fp/reduce');
 const replace = require('lodash/fp/replace');
+const uniq = require('lodash/fp/uniq');
 
-module.exports = (stations, lineData) => {
-  return map(eastNorth, result(stations, 'TrainStation'));
+module.exports = (trains, stations, lineData) => {
+  const locations = flow(
+    map('LocationSignature'),
+    uniq
+  )(result(trains, 'TrainAnnouncement'));
+
+  return flow(
+    filter(station => includes(station.LocationSignature, locations)),
+    map(eastNorth)
+  )(result(stations, 'TrainStation'));
 
   function eastNorth(station) {
     const match = /POINT \(([\d\\.]+) ([\d\\.]+)\)/.exec(

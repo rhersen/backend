@@ -22,6 +22,11 @@ module.exports = {
 
       console.log('station response after', new Date() - start, 'ms');
 
+      const trains = await request
+        .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
+        .type('xml')
+        .send(trainQuery());
+
       console.log('trains response after', new Date() - start, 'ms');
 
       const lineData = await request.get(
@@ -34,7 +39,11 @@ module.exports = {
 
       respond(
         (cache = JSON.stringify(
-          filterPendel(JSON.parse(stations.text), JSON.parse(lineData.text))
+          filterPendel(
+            JSON.parse(trains.text),
+            JSON.parse(stations.text),
+            JSON.parse(lineData.text)
+          )
         )),
         outgoingResponse
       );
@@ -72,6 +81,23 @@ function stationQuery() {
       <INCLUDE>AdvertisedShortLocationName</INCLUDE>
       <INCLUDE>CountyNo</INCLUDE>
       <INCLUDE>Geometry</INCLUDE>
+     </QUERY>
+    </REQUEST>`;
+}
+
+function trainQuery() {
+  return `<REQUEST>
+     <LOGIN authenticationkey='${key.trafikverket}' />
+     <QUERY objecttype='TrainAnnouncement' lastmodified='true' orderby='AdvertisedTimeAtLocation'>
+      <FILTER>
+       <AND>
+        <IN name='ProductInformation' value='Pendeltåg' />
+        <EQ name='ActivityType' value='Avgang' />
+        <GT name='AdvertisedTimeAtLocation' value='$dateadd(0:00:00)' />
+        <LT name='AdvertisedTimeAtLocation' value='$dateadd(0:59:00)' />
+       </AND>
+      </FILTER>
+      <INCLUDE>LocationSignature</INCLUDE>
      </QUERY>
     </REQUEST>`;
 }
