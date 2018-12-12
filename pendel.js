@@ -79,7 +79,6 @@ function stationQuery() {
       <INCLUDE>LocationSignature</INCLUDE>
       <INCLUDE>AdvertisedLocationName</INCLUDE>
       <INCLUDE>AdvertisedShortLocationName</INCLUDE>
-      <INCLUDE>CountyNo</INCLUDE>
       <INCLUDE>Geometry</INCLUDE>
      </QUERY>
     </REQUEST>`;

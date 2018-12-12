@@ -42,6 +42,7 @@ function query() {
        </OR>
       </FILTER>
       <INCLUDE>LocationSignature</INCLUDE>
+      <INCLUDE>AdvertisedLocationName</INCLUDE>
       <INCLUDE>AdvertisedShortLocationName</INCLUDE>
       <INCLUDE>Geometry</INCLUDE>
      </QUERY>
