@@ -3,51 +3,60 @@ const request = require('superagent');
 const filterPendel = require('./filterPendel');
 const key = require('./key');
 
-let cache = false;
+const cache = {
+  trains: false,
+  stations: false,
+  lineData: false,
+};
 
 module.exports = {
   json: async function(outgoingResponse) {
-    if (cache) {
-      respond(cache, outgoingResponse);
-      return;
-    }
-
     try {
       const start = new Date();
       console.log(start);
-      const stations = await request
-        .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
-        .type('xml')
-        .send(stationQuery());
+      if (!cache.stations) {
+        const stations = await request
+          .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
+          .type('xml')
+          .send(stationQuery());
+        cache.stations = stations.text;
+      }
 
       console.log('station response after', new Date() - start, 'ms');
 
-      const trains = await request
-        .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
-        .type('xml')
-        .send(trainQuery());
+      if (!cache.trains) {
+        const trains = await request
+          .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
+          .type('xml')
+          .send(trainQuery());
+        cache.trains = trains.text;
+      }
 
       console.log('trains response after', new Date() - start, 'ms');
 
-      const lineData = await request.get(
-        `https://api.sl.se/api2/LineData.json?model=site&key=${
-          key.slSites
-        }&DefaultTransportModeCode=TRAIN`
-      );
+      if (!cache.lineData) {
+        const lineData = await request.get(
+          `https://api.sl.se/api2/LineData.json?model=site&key=${
+            key.slSites
+          }&DefaultTransportModeCode=TRAIN`
+        );
+        cache.lineData = lineData.text;
+      }
 
       console.log('line data response after', new Date() - start, 'ms');
 
       respond(
-        (cache = JSON.stringify(
+        JSON.stringify(
           filterPendel(
-            JSON.parse(trains.text),
-            JSON.parse(stations.text),
-            JSON.parse(lineData.text)
+            JSON.parse(cache.trains),
+            JSON.parse(cache.stations),
+            JSON.parse(cache.lineData)
           )
-        )),
+        ),
         outgoingResponse
       );
     } catch (e) {
+      console.log(e);
       outgoingResponse.writeHead(500, { 'Content-Type': 'text/plain' });
       outgoingResponse.end(`problem with request: ${e.message}`);
     }
