@@ -11,47 +11,59 @@ const cache = {
 
 module.exports = {
   json: async function(outgoingResponse) {
+    const start = new Date();
+    console.log(start);
+
     try {
-      const start = new Date();
-      console.log(start);
       if (!cache.stations) {
         const stations = await request
           .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
           .type('xml')
           .send(stationQuery());
-        cache.stations = stations.text;
+        cache.stations = JSON.parse(stations.text);
       }
+    } catch (e) {
+      console.log(e);
+      cache.stations = false;
+    }
 
-      console.log('station response after', new Date() - start, 'ms');
+    console.log('station response after', new Date() - start, 'ms');
 
+    try {
       if (!cache.trains) {
         const trains = await request
           .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
           .type('xml')
           .send(trainQuery());
-        cache.trains = trains.text;
+        cache.trains = JSON.parse(trains.text);
       }
+    } catch (e) {
+      console.log(e);
+      cache.trains = false;
+    }
 
-      console.log('trains response after', new Date() - start, 'ms');
+    console.log('trains response after', new Date() - start, 'ms');
 
+    try {
       if (!cache.lineData) {
         const lineData = await request.get(
           `https://api.sl.se/api2/LineData.json?model=site&key=${
             key.slSites
           }&DefaultTransportModeCode=TRAIN`
         );
-        cache.lineData = lineData.text;
+        cache.lineData = JSON.parse(lineData.text);
       }
+    } catch (e) {
+      console.log(e);
+      cache.lineData = false;
+    }
 
-      console.log('line data response after', new Date() - start, 'ms');
+    console.log('line data response after', new Date() - start, 'ms');
 
+    try {
       respond(
         JSON.stringify(
-          filterPendel(
-            JSON.parse(cache.trains),
-            JSON.parse(cache.stations),
-            JSON.parse(cache.lineData)
-          )
+          filterPendel(cache.trains, cache.stations, cache.lineData)
         ),
         outgoingResponse
       );
