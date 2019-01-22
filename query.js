@@ -89,7 +89,6 @@ module.exports = {
   trains: (locations, since, until, direction) =>
     announcementQuery(
       compact([
-        pendelFilter(),
         direction && directionFilter(direction),
         locationFilter(locations),
         timeFilter(since, until),
