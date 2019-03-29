@@ -50,13 +50,10 @@ function query() {
 }
 
 module.exports = {
-  json: outgoingResponse =>
+  json: (outgoingResponse, head) =>
     stations(
       body => {
-        outgoingResponse.writeHead(200, {
-          'Content-Type': 'application/json; charset=utf-8',
-          'Cache-Control': 'no-cache',
-        });
+        outgoingResponse.writeHead(200, head);
         outgoingResponse.write(body);
         outgoingResponse.end();
       },

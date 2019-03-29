@@ -9,11 +9,23 @@ const getQuery = require('./getQuery');
 function requestListener(incomingRequest, outgoingResponse) {
   const url = decodeURIComponent(incomingRequest.url);
   const q = getQuery(url);
+  const { origin } = incomingRequest.headers;
 
-  if (q) sendRequest(q, outgoingResponse);
-  else if (/pendel/.test(url)) pendel.json(outgoingResponse);
-  else if (/stations/.test(url)) stations.json(outgoingResponse);
-  else if (sl.query(url)) sl.json(sl.query(url), outgoingResponse);
+  const allowOrigin = /http:..\w+.hersen.net/.test(origin)
+    ? { 'Access-Control-Allow-Origin': origin }
+    : {};
+
+  const head = {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-cache',
+    ...allowOrigin,
+  };
+
+  if (q) {
+    sendRequest(q, outgoingResponse, head);
+  } else if (/pendel/.test(url)) pendel.json(outgoingResponse, head);
+  else if (/stations/.test(url)) stations.json(outgoingResponse, head);
+  else if (sl.query(url)) sl.json(sl.query(url), outgoingResponse, head);
   else favicon(outgoingResponse);
 }
 
@@ -24,4 +36,4 @@ function favicon(response) {
 
 require('http')
   .createServer(requestListener)
-  .listen(1337, '127.0.0.1');
+  .listen(process.env.PORT || '3000');

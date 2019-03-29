@@ -1,17 +1,11 @@
 const request = require('superagent');
 
-module.exports = async (postData, outgoingResponse) => {
+module.exports = async (postData, outgoingResponse, head) => {
   try {
     const response = await request
       .post('http://api.trafikinfo.trafikverket.se/v1.2/data.json')
       .type('xml')
       .send(postData);
-
-    const head = {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'no-cache',
-      'Access-Control-Allow-Origin': 'http://localhost:1234',
-    };
 
     outgoingResponse.writeHead(200, head);
     outgoingResponse.write(response.text);

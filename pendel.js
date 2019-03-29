@@ -3,7 +3,7 @@ const filterPendel = require('./filterPendel');
 const cache = require('./cache');
 
 module.exports = {
-  json: async function(outgoingResponse) {
+  json: async function(outgoingResponse, head) {
     try {
       respond(
         JSON.stringify(
@@ -22,11 +22,7 @@ module.exports = {
     }
 
     function respond(body) {
-      outgoingResponse.writeHead(200, {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Cache-Control': 'no-cache',
-        'Access-Control-Allow-Origin': 'http://localhost:1234',
-      });
+      outgoingResponse.writeHead(200, head);
       outgoingResponse.write(body);
       outgoingResponse.end();
     }

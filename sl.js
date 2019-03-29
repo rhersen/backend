@@ -11,14 +11,11 @@ module.exports = {
         `?key=${key}&siteid=${match[1]}&timewindow=60`
       );
   },
-  json: async (query, outgoingResponse) => {
+  json: async (query, outgoingResponse, head) => {
     try {
       const res = await request.get(`http://api.sl.se/v1.2/data.json/${query}`);
 
-      outgoingResponse.writeHead(200, {
-        'Content-Type': 'application/json; charset=utf-8',
-        'Cache-Control': 'no-cache',
-      });
+      outgoingResponse.writeHead(200, head);
 
       outgoingResponse.write(res.text);
       outgoingResponse.end();
