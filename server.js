@@ -11,9 +11,10 @@ function requestListener(incomingRequest, outgoingResponse) {
   const q = getQuery(url);
   const { origin } = incomingRequest.headers;
 
-  const allowOrigin = /http:..\w+.hersen.net/.test(origin)
-    ? { 'Access-Control-Allow-Origin': origin }
-    : {};
+  const allowOrigin =
+    /http:..\w+.hersen.net/.test(origin) || /http:..localhost:1234/.test(origin)
+      ? { 'Access-Control-Allow-Origin': origin }
+      : {};
 
   const head = {
     'Content-Type': 'application/json; charset=utf-8',
