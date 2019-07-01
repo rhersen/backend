@@ -8,7 +8,7 @@
     "test": "mocha"
   },
   "engines": {
-    "node": "8"
+    "node": "10"
   },
   "author": "",
   "license": "BSD-2-Clause",
@@ -22,7 +22,6 @@
     "superagent": "^3.7.0"
   },
   "devDependencies": {
-    "babel-eslint": "^8.0.2",
     "chai": "^3.5.0",
     "eslint": "^4.9.0",
     "eslint-plugin-lodash": "^2.7.0",
